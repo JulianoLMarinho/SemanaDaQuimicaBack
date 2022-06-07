@@ -16,6 +16,7 @@ class AtividadeCreate(BaseModel):
     descricao_atividade: Optional[str]
     vagas: Optional[int]
     titulo: str
+    valor: Optional[float]
 
 
 class DiaHoraAtividade(BaseModel, extra=Extra.ignore):
@@ -62,6 +63,8 @@ class AtividadeLista(BaseModel):
     responsaveis: Optional[List[ResponsavelAtividade]]
     horarios: Optional[List[DiaHoraAtividade]]
     aceita_inscricao: bool
+    valor: Optional[float]
+    total_inscritos: Optional[int]
 
 
 class TipoAtividade(BaseModel):

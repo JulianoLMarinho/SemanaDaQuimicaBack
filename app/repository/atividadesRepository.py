@@ -24,7 +24,8 @@ class AtividadesRepository(BaseRepository):
                     ta.nome_tipo,
                     ae.tipo_atividade,
                     ae.aceita_inscricao,
-                    at.turno_id
+                    at.turno_id,
+                    ae.valor
                     FROM atividade ae
                     INNER JOIN tipo_atividade ta ON ta.id = ae.tipo_atividade
                     LEFT JOIN atividade_turno at ON at.atividade_id = ae.id
@@ -42,13 +43,18 @@ class AtividadesRepository(BaseRepository):
                     ta.nome_tipo,
                     t.nome_turno,
                     at.turno_id,
-                    ae.aceita_inscricao
+                    ae.aceita_inscricao,
+                    ae.valor,
+                    count(1) - 1 as total_inscritos
                     FROM atividade ae
                     INNER JOIN tipo_atividade ta ON ta.id = ae.tipo_atividade
                     LEFT JOIN atividade_turno at ON at.atividade_id = ae.id
                     LEFT JOIN turno t ON t.id = at.turno_id
+                    LEFT JOIN inscricao_atividade ia ON ia.atividade_id = ae.id
+                    LEFT JOIN inscricao i ON i.id = ia.inscricao_id
                     WHERE ae.edicao_semana_id = :EdicaoId
                     AND ta.cod_tipo IN :TipoAtividade
+                    GROUP BY ae.id, ae.titulo, ae.ativa, ae.descricao_atividade, ae.vagas, ta.nome_tipo, t.nome_turno, at.turno_id, ae.aceita_inscricao, ae.valor
                     ORDER BY ae.titulo"""
         return query_db(self.connection, query, {'EdicaoId': idEdicao, 'TipoAtividade': tipoAtividade}, AtividadeLista)
 
