@@ -1,4 +1,3 @@
-from msilib.schema import Error
 from typing import List, Tuple
 from fastapi import Depends
 from app.repository.userRepository import UserRepository
