@@ -1,0 +1,72 @@
+
+from typing import Any, List
+from xmlrpc.client import Boolean
+from fastapi import APIRouter, Depends
+from app.model.atividades import AtividadeCreate, AtividadeCreateComHorarioResponsavel, AtividadeLista, TipoAtividade, TurnoAtividade
+from app.model.comum import OpcaoSelecao
+from app.services.atividadesService import AtividadesService
+
+
+router = APIRouter()
+prefix = '/atividades'
+tags = ['Atividades']
+
+
+@router.get('/tipoAtividade', response_model=List[OpcaoSelecao])
+def getTipoAtividade(
+    service: AtividadesService = Depends()
+):
+    return service.tipoAtividades()
+
+
+@router.get("/inscricao", response_model=List[AtividadeLista])
+def getAtividadesByEdicaoInscricao(
+    idEdicao: int,
+    service: AtividadesService = Depends()
+):
+    return service.getAtividadesDetalhesByEdicaoAndTipo(idEdicao, ['CURSO', 'WORKSHOP', 'VISITA_TECNICA'])
+
+
+@router.get("/{idEdicao}", response_model=List[AtividadeLista])
+def getAtividadesByEdicao(
+    idEdicao: int,
+    service: AtividadesService = Depends()
+):
+    return service.getAtividadesDetalhesByEdicao(idEdicao)
+
+
+@router.get("/{idEdicao}/{tipoAtividade}", response_model=List[AtividadeLista])
+def getAtividadesByEdicaoAndTipo(
+    idEdicao: int,
+    tipoAtividade: str,
+    service: AtividadesService = Depends()
+):
+    return service.getAtividadesDetalhesByEdicaoAndTipo(idEdicao, [tipoAtividade])
+
+
+@router.get("/turno/{idEdicao}/{tipoAtividade}", response_model=List[TurnoAtividade])
+def getAtividadesByEdicaoAndTipo(
+    idEdicao: int,
+    tipoAtividade: str,
+    service: AtividadesService = Depends()
+):
+    return service.getAtividadesDetalhesByEdicaoTurnoAndTipo(idEdicao, tipoAtividade)
+
+
+@router.put("", response_model=Boolean)
+def criarAtividade(
+    atividade: AtividadeCreateComHorarioResponsavel,
+    service: AtividadesService = Depends()
+):
+    if (atividade.id):
+        service.atualizarAtividade(atividade)
+    else:
+        return service.criarAtividade(atividade)
+
+
+@router.post("")
+def atualizarAtividade(
+    atividade: AtividadeCreateComHorarioResponsavel,
+    service: AtividadesService = Depends()
+):
+    service.atualizarAtividade(atividade)
