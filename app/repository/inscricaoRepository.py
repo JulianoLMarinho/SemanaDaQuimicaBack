@@ -14,7 +14,7 @@ class InscricaoRepository(BaseRepository):
         return query_db_session(self.session, query[0] + " RETURNING id", query[1], single=True)
 
     async def adicionarAtividadeInscricao(self, inscricao_id: int, atividade_id: int):
-        query = """INSERT INTO inscricao_atividade VALUES (:InscricaoId, :AtividadeId)"""
+        query = """INSERT INTO inscricao_atividade(inscricao_id, atividade_id) VALUES (:InscricaoId, :AtividadeId)"""
         params = {
             "InscricaoId": inscricao_id,
             "AtividadeId": atividade_id

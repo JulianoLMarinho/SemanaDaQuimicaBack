@@ -52,7 +52,7 @@ class AuthorizationService:
                 key = os.getenv("JWT_KEY")
                 payloadUser = user.dict()
                 payloadUser['sub'] = user.email
-                expirationDate = datetime.utcnow() + timedelta(minutes=120)
+                expirationDate = datetime.utcnow() + timedelta(minutes=60)
                 payloadUser['exp'] = expirationDate
                 jwtToken = jwt.encode(payloadUser, key)
                 return AuthResponseBody(usuario=user, responseType='OK', access_token=jwtToken)

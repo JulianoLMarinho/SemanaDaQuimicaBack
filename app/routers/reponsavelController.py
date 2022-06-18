@@ -4,6 +4,7 @@ from app.dependencies import get_current_active_user
 from app.model.comum import OpcaoSelecao
 
 from app.model.responsavel import Responsavel
+from app.services.atividadesService import AtividadesService
 from app.services.responsavelService import ResponsavelService
 
 router = APIRouter()
@@ -23,6 +24,14 @@ def obterResponsaveis(
     service: ResponsavelService = Depends()
 ):
     return service.obterResponsaveis()
+
+
+@router.get("/atividade/{atividadeId}", dependencies=[Depends(get_current_active_user)])
+def getResponsaveisByAtividade(
+    atividadeId: int,
+    service: AtividadesService = Depends()
+):
+    return service.getResponsaveisByAtividade(atividadeId)
 
 
 @router.post("", dependencies=[Depends(get_current_active_user)])

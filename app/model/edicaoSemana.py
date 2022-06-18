@@ -19,10 +19,12 @@ class EdicaoSemanaCreate(BaseModel):
     data_fim: date
     ativa: bool
     quem_somos: Optional[str]
+    numero_edicao: int
 
 
 class EdicaoSemana(EdicaoSemanaCreate):
     id: Optional[int]
+    certificado_liberado: bool
 
 
 class EdicaoSemanaComComissaoIds(EdicaoSemana):
