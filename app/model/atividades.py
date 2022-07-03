@@ -57,6 +57,7 @@ class AtividadeLista(BaseModel):
     descricao_atividade: Optional[str]
     vagas: Optional[int]
     nome_tipo: Optional[str]
+    cod_tipo: Optional[str]
     tipo_atividade: Optional[int]
     nome_turno: Optional[str]
     turno_id: Optional[int]

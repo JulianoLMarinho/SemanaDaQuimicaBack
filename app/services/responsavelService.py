@@ -21,11 +21,11 @@ class ResponsavelService:
     def atualizarResponsavel(self, responsavel: Responsavel):
         return self.repo.atualizarResponsavel(responsavel)
 
-    async def deletarEdicaoComissaoByEdicao(self, edicaoSemanaId: int):
-        await self.repo.deletarEdicaoComissaoByEdicao(edicaoSemanaId)
+    def deletarEdicaoComissaoByEdicao(self, edicaoSemanaId: int):
+        self.repo.deletarEdicaoComissaoByEdicao(edicaoSemanaId)
 
-    async def salvarEdicaoComissao(self, edicaoSemanaId: int, integranteComissaoId: int):
-        await self.repo.salvarEdicaoComissao(edicaoSemanaId, integranteComissaoId)
+    def salvarEdicaoComissao(self, edicaoSemanaId: int, integranteComissaoId: int):
+        self.repo.salvarEdicaoComissao(edicaoSemanaId, integranteComissaoId)
 
-    async def obterComissaoByEdicao(self, edicaoSemanaId: int) -> List[Responsavel]:
-        return await self.repo.obterComissaoByEdicao(edicaoSemanaId)
+    def obterComissaoByEdicao(self, edicaoSemanaId: int) -> List[Responsavel]:
+        return self.repo.obterComissaoByEdicao(edicaoSemanaId)

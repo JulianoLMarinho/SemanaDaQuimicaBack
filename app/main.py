@@ -9,6 +9,7 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Depends
 from app.services.authorizationService import AuthorizationService
+from app.sql.database import close_connection_pools, open_connection_pools
 
 
 class ModelName(str, Enum):
@@ -24,7 +25,10 @@ class Item(BaseModel):
     tax: Optional[float] = None
 
 
-app = FastAPI()
+app = FastAPI(
+    on_startup=[open_connection_pools],
+    on_shutdown=[close_connection_pools]
+)
 
 
 origins = [
@@ -54,8 +58,8 @@ app.include_router(atividadesController.router,
 bind_routers(app)
 
 
-@app.post("/authenticate")
-async def authenticate(
+@ app.post("/authenticate")
+def authenticate(
     token: AuthRequestBody,
     service: AuthorizationService = Depends()
 ):

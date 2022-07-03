@@ -10,16 +10,16 @@ tags = ['Cores Edição']
 
 
 @router.post("")
-async def salvarCoresEdicao(
+def salvarCoresEdicao(
     coresEdicao: CoresEdicaoCreate,
     service: CoresEdicaoService = Depends()
 ):
-    await service.salvarCoresEdicao(coresEdicao)
+    service.salvarCoresEdicao(coresEdicao)
 
 
 @router.get("/{edicaoId}", response_model=CoresEdicaoCreate)
-async def obterCoresEdicao(
+def obterCoresEdicao(
     edicaoId: int,
     service: CoresEdicaoService = Depends()
 ):
-    return await service.obterCoresEdicao(edicaoId)
+    return service.obterCoresEdicao(edicaoId)

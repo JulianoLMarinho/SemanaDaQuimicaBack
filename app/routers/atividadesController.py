@@ -30,6 +30,14 @@ def getAtividadesByEdicaoInscricao(
     return service.getAtividadesDetalhesByEdicaoAndTipo(idEdicao, ['CURSO', 'WORKSHOP', 'VISITA_TECNICA'])
 
 
+@router.get("/atividades-certificado", response_model=List[AtividadeLista])
+def getAtividadesCertificadosByEdicaoInscricao(
+    idEdicao: int,
+    service: AtividadesService = Depends()
+):
+    return service.getAtividadesDetalhesByEdicaoAndTipo(idEdicao, ['CURSO', 'WORKSHOP', 'VISITA_TECNICA', 'PALESTRA'])
+
+
 @router.get("/lista-certificados", response_model=List[CertificadoUsuario])
 def obterListaCertificadosUsuario(
     service: AtividadesService = Depends(),

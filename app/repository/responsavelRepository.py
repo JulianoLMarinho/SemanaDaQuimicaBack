@@ -25,7 +25,7 @@ class ResponsavelRepository(BaseRepository):
         query = f"DELETE FROM atividade_responsavel WHERE id_atividade = {atividadeId}"
         exec_session_sql(self.session, query)
 
-    async def deletarEdicaoComissaoByEdicao(self, edicaoSemanaId: int):
+    def deletarEdicaoComissaoByEdicao(self, edicaoSemanaId: int):
         query = f"DELETE FROM edicao_comissao WHERE edicao_semana_id = {edicaoSemanaId}"
         exec_session_sql(self.session, query)
 
@@ -36,11 +36,11 @@ class ResponsavelRepository(BaseRepository):
 
         exec_sql(self.connection, g, responsavel.dict())
 
-    async def salvarEdicaoComissao(self, edicaoSemanaId: int, integranteComissaoId: int):
+    def salvarEdicaoComissao(self, edicaoSemanaId: int, integranteComissaoId: int):
         query = f"INSERT INTO edicao_comissao VALUES ({edicaoSemanaId}, {integranteComissaoId})"
         exec_session_sql(self.session, query)
 
-    async def obterComissaoByEdicao(self, edicaoSemanaId: int) -> List[Responsavel]:
+    def obterComissaoByEdicao(self, edicaoSemanaId: int) -> List[Responsavel]:
         query = """SELECT * FROM responsavel r
                     INNER JOIN edicao_comissao ec ON ec.responsavel_id = r.id
                     WHERE ec.edicao_semana_id = :EdicaoId"""

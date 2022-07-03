@@ -25,6 +25,10 @@ class EdicaoSemanaCreate(BaseModel):
 class EdicaoSemana(EdicaoSemanaCreate):
     id: Optional[int]
     certificado_liberado: bool
+    aceita_inscricao_atividade: bool
+    site_em_construcao: bool
+    logo: Optional[str]
+    logo_completa: Optional[str]
 
 
 class EdicaoSemanaComComissaoIds(EdicaoSemana):
@@ -59,3 +63,9 @@ class ComissaoEdicao(BaseModel):
     twitter: Optional[str]
     instagram: Optional[str]
     facebook: Optional[str]
+
+
+class EdicaoLogo(BaseModel):
+    edicao_semana_id: int
+    logo: str
+    tipo_logo: str

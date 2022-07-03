@@ -5,21 +5,21 @@ from app.sql.crud import exec_sql, insert_command_from_models, query_db, update_
 
 
 class PatrocinadorRepository(BaseRepository):
-    async def salvarNovoPatrocinador(self, patrocinador: PatrocinadorCreate):
+    def salvarNovoPatrocinador(self, patrocinador: PatrocinadorCreate):
         columnsTable = PatrocinadorCreate.construct().__fields__
         query = insert_command_from_models(
             'patrocinador', columnsTable, [patrocinador])
         exec_sql(self.connection, query[0], query[1])
 
-    async def obterPatrocindorEdicao(self, edicaoId: int) -> List[Patrocinador]:
+    def obterPatrocindorEdicao(self, edicaoId: int) -> List[Patrocinador]:
         query = f"""SELECT * FROM patrocinador WHERE edicao_semana_id = {edicaoId} ORDER BY ordem"""
         return query_db(self.connection, query, model=Patrocinador)
 
-    async def atualizarPatrocinador(self, patrocinador: Patrocinador):
+    def atualizarPatrocinador(self, patrocinador: Patrocinador):
         query = update_command_from_model(
             'patrocinador', Patrocinador.construct().__fields__) + """ WHERE id = :id"""
         exec_sql(self.connection, query, patrocinador.dict())
 
-    async def deletarPatrocinador(self, patrocinadorId: int):
+    def deletarPatrocinador(self, patrocinadorId: int):
         query = f"DELETE FROM patrocinador WHERE id = {patrocinadorId}"
         exec_sql(self.connection, query)

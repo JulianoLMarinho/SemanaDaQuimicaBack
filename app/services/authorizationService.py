@@ -27,7 +27,7 @@ class AuthorizationService:
 
     def authorizeGoogle(self, authRequest: AuthRequestBody) -> AuthResponseBody:
         idinfo = id_token.verify_oauth2_token(authRequest.token, requests.Request(
-        ), os.getenv("GOOGLE_KEY"))
+        ), os.getenv("GOOGLE_KEY"), 50)
         userGoogleId = idinfo['sub']
         userEmail = idinfo['email']
         user = self.userService.getUserByEmail(userEmail)

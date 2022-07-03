@@ -11,7 +11,7 @@ key = os.getenv("JWT_KEY")
 application_token_scheme = HTTPBearer(scheme_name="Token")
 
 
-async def get_current_user(token: HTTPAuthorizationCredentials = Depends(application_token_scheme)):
+def get_current_user(token: HTTPAuthorizationCredentials = Depends(application_token_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -31,5 +31,5 @@ async def get_current_user(token: HTTPAuthorizationCredentials = Depends(applica
     return user
 
 
-async def get_current_active_user(current_user: Usuario = Depends(get_current_user)):
+def get_current_active_user(current_user: Usuario = Depends(get_current_user)):
     return current_user
