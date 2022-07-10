@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy import true
-from app.model.edicaoSemana import CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaCreate
+from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaCreate
 from app.repository.baseRepository import BaseRepository
 from app.sql.crud import exec_session_sql, exec_sql, insert_command_from_models, query_db, query_db_session, update_command_from_model
 
@@ -80,6 +80,17 @@ class EdicaoSemanaRepository(BaseRepository):
         else:
             query = f"UPDATE edicao_semana SET logo_completa = :logo WHERE id = :edicao_semana_id"
         exec_sql(self.connection, query, edicaoLogo.dict())
+
+    def salvarAssinaturaPresidente(self, assinatura: Assinatura):
+        if assinatura.tipo_assinatura == 'presidente':
+            query = """UPDATE edicao_semana SET assinatura_presidente_edicao = :assinatura,
+                       presidente_edicao = :nome 
+                       WHERE id = :edicao_semana_id"""
+        elif assinatura.tipo_assinatura == 'direcao':
+            query = """UPDATE edicao_semana SET assinatura_direcao_instituto = :assinatura,
+                       direcao_instituto = :nome 
+                       WHERE id = :edicao_semana_id"""
+        exec_sql(self.connection, query, assinatura.dict())
 
     def ativarSiteEmConstrucao(self, edicaoSemanaId: int, siteEmConstrucao: bool):
         query = f"UPDATE edicao_semana SET site_em_construcao = :SiteEmConstrucao WHERE id = :EdicaoSemanaId"

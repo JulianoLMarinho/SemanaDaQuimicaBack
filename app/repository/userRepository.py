@@ -22,12 +22,14 @@ class UserRepository(BaseRepository):
         return result
 
     def getUserByEmailAndGoogleUser(self, email: str, googleUserId: str):
-        query = "SELECT * FROM usuario WHERE email = :UserEmail AND 'id_google' = :GoogleUserId"
+        query = """SELECT u.*, pu.codigo_perfil AS perfil FROM usuario u
+                    INNER JOIN perfil_usuario pu ON pu.id = u.perfil_usuario
+                    WHERE email = :UserEmail AND id_google = :GoogleUserId"""
         params = {
             'UserEmail': email,
             'GoogleUserId': googleUserId
         }
-        return query_db(self.connection, query, params, single=True)
+        return query_db(self.connection, query, params, single=True, model=Usuario)
 
     def addUser(self, usuario: Usuario):
         query = """INSERT INTO usuario(nome, 

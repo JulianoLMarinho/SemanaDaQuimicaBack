@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import Depends
-from app.model.edicaoSemana import CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds, EdicaoSemanaCreate
+from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds, EdicaoSemanaCreate
 
 from app.repository.edicaoSemanaRepository import EdicaoSemanaRepository
 from app.services.responsavelService import ResponsavelService
@@ -78,3 +78,6 @@ class EdicaoSemanaService:
 
     def ativarSiteEmConstrucao(self, edicaoSemanaId: int, siteEmConstrucao: bool):
         self.repo.ativarSiteEmConstrucao(edicaoSemanaId, siteEmConstrucao)
+
+    def salvarAssinaturaPresidente(self, assinatura: Assinatura):
+        self.repo.salvarAssinaturaPresidente(assinatura)

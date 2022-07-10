@@ -1,8 +1,10 @@
+import asyncio
 from typing import Any, List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
+from sse_starlette import EventSourceResponse
 from app.dependencies import get_current_active_user
 
-from app.model.edicaoSemana import CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds
+from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds
 from app.services.edicaoSemanaService import EdicaoSemanaService
 
 
@@ -47,6 +49,32 @@ def adicionarCarrousselImage(
     service: EdicaoSemanaService = Depends()
 ):
     service.adicionarCarrousselImage(carrousselImage)
+
+
+@router.get("/stream-results")
+async def message_stream(request: Request):
+    def new_messages():
+        # Add logic here to check for new messages
+        yield 'Hello World'
+
+    async def event_generator():
+        while True:
+            # If client closes connection, stop sending events
+            if await request.is_disconnected():
+                break
+
+            # Checks for new messages and return them to client if any
+            if new_messages():
+                yield {
+                    "event": "new_message",
+                    "id": "message_id",
+                    "retry": 15000,
+                    "data": "message_content"
+                }
+
+            await asyncio.sleep(5)
+
+    return EventSourceResponse(event_generator())
 
 
 @router.get("/carousel-edicao/{edicaoId}", response_model=List[CarouselImage])
@@ -105,6 +133,14 @@ def salvarLogo(
     service: EdicaoSemanaService = Depends()
 ):
     service.salvarLogo(edicaoLogo)
+
+
+@router.post("/salvar-assinatura", dependencies=[Depends(get_current_active_user)])
+def salvarLogo(
+    assinatura: Assinatura,
+    service: EdicaoSemanaService = Depends()
+):
+    service.salvarAssinaturaPresidente(assinatura)
 
 
 @router.put("/site-em-construcao/{edicaoSemanaId}/{siteEmContrucao}", dependencies=[Depends(get_current_active_user)])
