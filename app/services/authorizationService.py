@@ -33,16 +33,21 @@ class AuthorizationService:
         user = self.userService.getUserByEmailAndGoogleUser(
             userEmail, userGoogleId)
         if user == None:
-            user = Usuario(id=0, nome=idinfo['name'], email=idinfo['email'],
-                           url_foto_perfil=idinfo['picture'], id_google=userGoogleId)
-            user.perfil = 'adm'
+            user = Usuario(id=0, email=idinfo['email'], id_google=userGoogleId)
+            user.perfil = 'aluno'
             user.permissoes = []
-            response = AuthResponseBody(
-                usuario=user, responseType='USUARIO_NAO_EXISTE')
-            return response
+            user.url_foto_perfil = idinfo['picture'] if 'picture' in idinfo else None
+            self.userService.addUser(user)
+            key = os.getenv("JWT_KEY")
+            payloadUser = user.dict()
+            payloadUser['sub'] = user.email
+            expirationDate = datetime.utcnow() + timedelta(minutes=60)
+            payloadUser['exp'] = expirationDate
+            jwtToken = jwt.encode(payloadUser, key)
+            return AuthResponseBody(usuario=user, responseType='OK', access_token=jwtToken)
         else:
             user.permissoes = []
-            user.url_foto_perfil = idinfo['picture']
+            user.url_foto_perfil = idinfo['picture'] if 'picture' in idinfo else None
             user.permissoes = self.userService.getPermissaoUsuario(
                 user.id)
             key = os.getenv("JWT_KEY")

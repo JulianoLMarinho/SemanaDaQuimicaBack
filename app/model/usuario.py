@@ -5,7 +5,7 @@ from pydantic.types import NonNegativeInt
 
 class Usuario(BaseModel):
     id: NonNegativeInt
-    nome: str
+    nome: Optional[str]
     estado: Optional[str]
     cidade: Optional[str]
     universidade: Optional[str]

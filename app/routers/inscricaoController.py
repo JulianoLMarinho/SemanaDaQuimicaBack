@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 
 from app.dependencies import get_current_active_user
 from app.model.atividades import Atividade
@@ -12,12 +12,16 @@ prefix = '/inscricao'
 tags = ['Inscrição']
 
 
-@router.post("", dependencies=[Depends(get_current_active_user)])
+@router.post("")
 def adicionarInscricao(
     inscricao: InscricaoAtividades,
-    service: InscricaoService = Depends()
+    background_task: BackgroundTasks,
+    service: InscricaoService = Depends(),
+    usuario=Depends(get_current_active_user),
 ):
-    service.criarInscricao(inscricao)
+    inscricaoId = service.criarInscricao(inscricao)
+    background_task.add_task(
+        service.enviarEmailConfirmacaoInscricao, usuario['email'], inscricaoId)
 
 
 @router.put("/pagamento", dependencies=[Depends(get_current_active_user)])
@@ -32,9 +36,12 @@ def informarPagamento(
 @router.delete("/{inscricaoId}", dependencies=[Depends(get_current_active_user)])
 def cancelarInscricao(
     inscricaoId: int,
+    background_task: BackgroundTasks,
     service: InscricaoService = Depends()
 ):
     service.cancelarInscricao(inscricaoId)
+    background_task.add_task(
+        service.enviarEmailCancelamentoInscricao, inscricaoId)
 
 
 @router.get("/confirmacao", dependencies=[Depends(get_current_active_user)], response_model=List[Inscricao])
@@ -47,9 +54,12 @@ def obterInscricoes(
 @router.put("/confirmacao/{inscricao_id}", dependencies=[Depends(get_current_active_user)])
 def confirmarInscricao(
     inscricao_id: int,
+    background_task: BackgroundTasks,
     service: InscricaoService = Depends()
 ):
     service.confirmarInscricao(inscricao_id)
+    background_task.add_task(
+        service.enviarEmailConfirmacaoPagamentoInscricao, inscricao_id)
 
 
 @router.get("/total-pagamento-informado", dependencies=[Depends(get_current_active_user)])

@@ -99,3 +99,11 @@ class EdicaoSemanaRepository(BaseRepository):
             'EdicaoSemanaId': edicaoSemanaId
         }
         exec_sql(self.connection, query, params)
+
+    def salvarQuemSomos(self, quemSomosTexto: str, edicaoSemanaId: int):
+        query = "UPDATE edicao_semana SET quem_somos = :QuemSomos WHERE id = :EdicaoSemanaId"
+        params = {
+            "QuemSomos": quemSomosTexto,
+            "EdicaoSemanaId": edicaoSemanaId
+        }
+        exec_sql(self.connection, query, params)

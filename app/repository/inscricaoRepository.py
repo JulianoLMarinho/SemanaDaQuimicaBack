@@ -1,6 +1,7 @@
 from typing import Any, List
 from app.model.atividades import Atividade
 from app.model.inscricao import AtividadeUsuario, Inscricao, InscricaoCreate
+from app.model.usuario import Usuario
 from app.repository.baseRepository import BaseRepository
 from app.sql.crud import exec_session_sql, exec_sql, insert_command_from_models, query_db, query_db_session
 
@@ -66,3 +67,9 @@ class InscricaoRepository(BaseRepository):
     def totalInscricoesPagamentoInformado(self):
         query = """SELECT COUNT(1) as total FROM inscricao WHERE status = 'PAGAMENTO_INFORMADO'"""
         return query_db(self.connection, query, single=True)
+
+    def obterUsuarioPorInscricao(self, inscricao_id: int) -> Usuario:
+        query = """SELECT u.email, u.id FROM Usuario u
+                    INNER JOIN inscricao I on I.usuario_id = u.id
+                    WHERE I.id = :InscricaoId"""
+        return query_db(self.connection, query, {"InscricaoId": inscricao_id}, single=True, model=Usuario)

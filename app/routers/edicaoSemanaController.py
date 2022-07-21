@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request
 from sse_starlette import EventSourceResponse
 from app.dependencies import get_current_active_user
 
-from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds
+from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds, QuemSomos
 from app.services.edicaoSemanaService import EdicaoSemanaService
 
 
@@ -22,7 +22,7 @@ def getEdicaoSemana(
 
 @router.put("", dependencies=[Depends(get_current_active_user)])
 def editarEdicaoSemana(
-    edicaoSemana: EdicaoSemanaComComissaoIds,
+    edicaoSemana: EdicaoSemana,
     service: EdicaoSemanaService = Depends()
 ):
     return service.editarCriarEdicaoSemana(edicaoSemana)
@@ -99,6 +99,14 @@ def deletarCarouselImage(
     service: EdicaoSemanaService = Depends()
 ):
     service.deletarCarouselImage(carouselImageId)
+
+
+@router.put("/quem-somos", dependencies=[Depends(get_current_active_user)])
+def salvarQuemSomos(
+    quemSomos: QuemSomos,
+    service: EdicaoSemanaService = Depends()
+):
+    service.salvarQuemSomos(quemSomos.quem_somos, quemSomos.edicao_semana_id)
 
 
 @router.get("/quem-somos/{edicaoSemanaId}", response_model=List[ComissaoEdicao], dependencies=[Depends(get_current_active_user)])

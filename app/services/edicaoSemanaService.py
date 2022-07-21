@@ -42,7 +42,7 @@ class EdicaoSemanaService:
     def adicionarEdicaoSemana(self, edicaoSemana: EdicaoSemanaCreate):
         return self.repo.adicionarEdicaoSemana(edicaoSemana)
 
-    def editarCriarEdicaoSemana(self, edicaoSemana: EdicaoSemanaComComissaoIds):
+    def editarCriarEdicaoSemana(self, edicaoSemana: EdicaoSemana):
         with self.repo.session.begin():
             try:
                 if edicaoSemana.id == None:
@@ -50,11 +50,6 @@ class EdicaoSemanaService:
                     edicaoSemana.id = edicaoInsertId.id
                 else:
                     self.repo.editarEdicaoSemana(edicaoSemana)
-                self.responsavelService.deletarEdicaoComissaoByEdicao(
-                    edicaoSemana.id)
-                for res in edicaoSemana.comissao_edicao:
-                    self.responsavelService.salvarEdicaoComissao(
-                        edicaoSemana.id, res)
                 self.repo.session.commit()
                 return True
             except:
@@ -81,3 +76,6 @@ class EdicaoSemanaService:
 
     def salvarAssinaturaPresidente(self, assinatura: Assinatura):
         self.repo.salvarAssinaturaPresidente(assinatura)
+
+    def salvarQuemSomos(self, quemSomosTexto: str, edicaoSemanaId: int):
+        self.repo.salvarQuemSomos(quemSomosTexto, edicaoSemanaId)

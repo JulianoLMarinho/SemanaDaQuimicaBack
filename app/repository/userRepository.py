@@ -55,7 +55,7 @@ class UserRepository(BaseRepository):
                            :Nivel, 
                            :TamanhoCamisa, 
                            :Genero,
-                           1)"""
+                           2)"""
         params = {
             'Nome': usuario.nome,
             'UrlFotoPerfil': usuario.url_foto_perfil,

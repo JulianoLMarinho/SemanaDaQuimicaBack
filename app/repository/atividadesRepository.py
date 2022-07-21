@@ -26,7 +26,10 @@ class AtividadesRepository(BaseRepository):
                     ae.tipo_atividade,
                     ae.aceita_inscricao,
                     at.turno_id,
-                    ae.valor
+                    ae.valor,
+                    ae.atividade_presencial,
+                    ae.local,
+                    ae.link
                     FROM atividade ae
                     INNER JOIN tipo_atividade ta ON ta.id = ae.tipo_atividade
                     LEFT JOIN atividade_turno at ON at.atividade_id = ae.id
@@ -47,7 +50,10 @@ class AtividadesRepository(BaseRepository):
                     at.turno_id,
                     ae.aceita_inscricao,
                     ae.valor,
-                    count(1) - 1 as total_inscritos
+                    count(1) - 1 as total_inscritos,
+                    ae.atividade_presencial,
+                    ae.local,
+                    ae.link
                     FROM atividade ae
                     INNER JOIN tipo_atividade ta ON ta.id = ae.tipo_atividade
                     LEFT JOIN atividade_turno at ON at.atividade_id = ae.id
