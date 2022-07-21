@@ -17,6 +17,9 @@ class AtividadeCreate(BaseModel):
     vagas: Optional[int]
     titulo: str
     valor: Optional[float]
+    atividade_presencial: bool
+    local: Optional[str]
+    link: Optional[str]
 
 
 class DiaHoraAtividade(BaseModel, extra=Extra.ignore):
@@ -57,6 +60,7 @@ class AtividadeLista(BaseModel):
     descricao_atividade: Optional[str]
     vagas: Optional[int]
     nome_tipo: Optional[str]
+    cod_tipo: Optional[str]
     tipo_atividade: Optional[int]
     nome_turno: Optional[str]
     turno_id: Optional[int]
@@ -65,6 +69,9 @@ class AtividadeLista(BaseModel):
     aceita_inscricao: bool
     valor: Optional[float]
     total_inscritos: Optional[int]
+    atividade_presencial: bool
+    local: Optional[str]
+    link: Optional[str]
 
 
 class TipoAtividade(BaseModel):

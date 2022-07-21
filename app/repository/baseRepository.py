@@ -1,11 +1,12 @@
 from app.sql.connections import MainConnection, MainSession
+from sqlalchemy.engine import Connection
 from sqlalchemy.orm import sessionmaker
 from fastapi import Depends
 from app.sql.crud import exec_sql, query_db
 
 
 class BaseRepository:
-    def __init__(self, conn: MainConnection = Depends(), session: sessionmaker = Depends(MainSession)):
+    def __init__(self, conn: Connection = Depends(MainConnection), session: sessionmaker = Depends(MainSession)):
         self.connection = conn
         self.session = session
 

@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 
 from app.dependencies import get_current_active_user
 from app.model.atividades import Atividade
@@ -12,71 +12,82 @@ prefix = '/inscricao'
 tags = ['Inscrição']
 
 
-@router.post("", dependencies=[Depends(get_current_active_user)])
-async def adicionarInscricao(
+@router.post("")
+def adicionarInscricao(
     inscricao: InscricaoAtividades,
-    service: InscricaoService = Depends()
+    background_task: BackgroundTasks,
+    service: InscricaoService = Depends(),
+    usuario=Depends(get_current_active_user),
 ):
-    await service.criarInscricao(inscricao)
+    inscricaoId = service.criarInscricao(inscricao)
+    background_task.add_task(
+        service.enviarEmailConfirmacaoInscricao, usuario['email'], inscricaoId)
 
 
 @router.put("/pagamento", dependencies=[Depends(get_current_active_user)])
-async def informarPagamento(
+def informarPagamento(
     documento: InformarPagamento,
     service: InscricaoService = Depends()
 ):
-    await service.informarPagamento(documento.inscricao_id, documento.numero_documento)
+    service.informarPagamento(documento.inscricao_id,
+                              documento.numero_documento)
 
 
 @router.delete("/{inscricaoId}", dependencies=[Depends(get_current_active_user)])
-async def cancelarInscricao(
+def cancelarInscricao(
     inscricaoId: int,
+    background_task: BackgroundTasks,
     service: InscricaoService = Depends()
 ):
-    await service.cancelarInscricao(inscricaoId)
+    service.cancelarInscricao(inscricaoId)
+    background_task.add_task(
+        service.enviarEmailCancelamentoInscricao, inscricaoId)
 
 
 @router.get("/confirmacao", dependencies=[Depends(get_current_active_user)], response_model=List[Inscricao])
-async def obterInscricoes(
+def obterInscricoes(
     service: InscricaoService = Depends()
 ):
-    return await service.obterInscricoesConfirmacao()
+    return service.obterInscricoesConfirmacao()
 
 
 @router.put("/confirmacao/{inscricao_id}", dependencies=[Depends(get_current_active_user)])
-async def confirmarInscricao(
+def confirmarInscricao(
     inscricao_id: int,
+    background_task: BackgroundTasks,
     service: InscricaoService = Depends()
 ):
-    await service.confirmarInscricao(inscricao_id)
+    service.confirmarInscricao(inscricao_id)
+    background_task.add_task(
+        service.enviarEmailConfirmacaoPagamentoInscricao, inscricao_id)
 
 
 @router.get("/total-pagamento-informado", dependencies=[Depends(get_current_active_user)])
-async def totalInscricoesPagamentoInformado(
+def totalInscricoesPagamentoInformado(
     service: InscricaoService = Depends()
 ):
-    return await service.totalInscricoesPagamentoInformado()
+    return service.totalInscricoesPagamentoInformado()
 
 
 @router.get("/{usuarioId}", dependencies=[Depends(get_current_active_user)], response_model=List[AtividadeUsuario])
-async def obterAtividadesUsuario(
+def obterAtividadesUsuario(
     usuarioId: int,
     service: InscricaoService = Depends()
 ):
-    return await service.obterAtividadesUsuario(usuarioId)
+    return service.obterAtividadesUsuario(usuarioId)
 
 
 @router.get("/{usuarioId}/resumo", dependencies=[Depends(get_current_active_user)], response_model=List[Inscricao])
-async def obterInscricoes(
+def obterInscricoes(
     usuarioId: int,
     service: InscricaoService = Depends()
 ):
-    return await service.obterInscricoes(usuarioId)
+    return service.obterInscricoes(usuarioId)
 
 
 @router.get("/atividade/usuario/{inscricaoId}", dependencies=[Depends(get_current_active_user)], response_model=List[Atividade])
-async def obterAtividade(
+def obterAtividade(
     inscricaoId: int,
     service: InscricaoService = Depends()
 ):
-    return await service.obterAtividade(inscricaoId)
+    return service.obterAtividade(inscricaoId)

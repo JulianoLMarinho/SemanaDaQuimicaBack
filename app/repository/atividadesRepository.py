@@ -1,5 +1,6 @@
 from typing import Any, List
 from app.model.atividades import Atividade, AtividadeCreate, AtividadeLista, AtividadeORM, DiaHoraAtividade, ResponsavelAtividade, TipoAtividade
+from app.model.certificadoUsuario import CertificadoUsuario
 from app.model.comum import OpcaoSelecao
 from app.model.usuarioModel import Usuario
 from app.repository.baseRepository import BaseRepository
@@ -25,7 +26,10 @@ class AtividadesRepository(BaseRepository):
                     ae.tipo_atividade,
                     ae.aceita_inscricao,
                     at.turno_id,
-                    ae.valor
+                    ae.valor,
+                    ae.atividade_presencial,
+                    ae.local,
+                    ae.link
                     FROM atividade ae
                     INNER JOIN tipo_atividade ta ON ta.id = ae.tipo_atividade
                     LEFT JOIN atividade_turno at ON at.atividade_id = ae.id
@@ -41,11 +45,15 @@ class AtividadesRepository(BaseRepository):
                     ae.descricao_atividade,
                     ae.vagas,
                     ta.nome_tipo,
+                    ta.cod_tipo,
                     t.nome_turno,
                     at.turno_id,
                     ae.aceita_inscricao,
                     ae.valor,
-                    count(1) - 1 as total_inscritos
+                    count(1) - 1 as total_inscritos,
+                    ae.atividade_presencial,
+                    ae.local,
+                    ae.link
                     FROM atividade ae
                     INNER JOIN tipo_atividade ta ON ta.id = ae.tipo_atividade
                     LEFT JOIN atividade_turno at ON at.atividade_id = ae.id
@@ -54,7 +62,7 @@ class AtividadesRepository(BaseRepository):
                     LEFT JOIN inscricao i ON i.id = ia.inscricao_id
                     WHERE ae.edicao_semana_id = :EdicaoId
                     AND ta.cod_tipo IN :TipoAtividade
-                    GROUP BY ae.id, ae.titulo, ae.ativa, ae.descricao_atividade, ae.vagas, ta.nome_tipo, t.nome_turno, at.turno_id, ae.aceita_inscricao, ae.valor
+                    GROUP BY ae.id, ae.titulo, ae.ativa, ta.cod_tipo, ae.descricao_atividade, ae.vagas, ta.nome_tipo, t.nome_turno, at.turno_id, ae.aceita_inscricao, ae.valor
                     ORDER BY ae.titulo"""
         return query_db(self.connection, query, {'EdicaoId': idEdicao, 'TipoAtividade': tipoAtividade}, AtividadeLista)
 
@@ -64,6 +72,13 @@ class AtividadesRepository(BaseRepository):
                    INNER JOIN responsavel r on r.id = ar.id_responsavel
                    WHERE ar.id_atividade IN :AtividadeIds"""
         return query_db(self.connection, query, {'AtividadeIds': atividadesIds}, model=ResponsavelAtividade)
+
+    def getResponsaveisByAtividade(self, atividadeId: int):
+        query = """SELECT r.nome_responsavel
+                   FROM atividade_responsavel ar
+                   INNER JOIN responsavel r on r.id = ar.id_responsavel
+                   WHERE ar.id_atividade = :AtividadeId"""
+        return query_db(self.connection, query, {'AtividadeId': atividadeId})
 
     def tiposAtividades(self) -> List[OpcaoSelecao]:
         query = """SELECT id as value, nome_tipo as name FROM tipo_atividade"""
@@ -95,3 +110,35 @@ class AtividadesRepository(BaseRepository):
         g += " WHERE id = :id"
 
         exec_session_sql(self.session, g, atividade.dict())
+
+    def obterListaCertificadosUsuario(self, usuarioId: int) -> List[CertificadoUsuario]:
+        query = """select id, numero_edicao, cod_tipo, data_inicio, data_fim, tema, titulo, (inteira*1.0 + meia/2.0)/(dias*1.0) as percentual_presenca, duracao_atividade from (
+                    select id, numero_edicao, cod_tipo, data_inicio, data_fim, tema, titulo, inteira, meia, count(1) as dias, sum(diff) as duracao_atividade from (
+                        select a.id, 
+                               es.numero_edicao, 
+                               a.titulo, 
+                               es.data_inicio, 
+                               es.data_fim, 
+                               es.tema, 
+                               dha.dia, 
+                               dha2.dia,
+                               tp.cod_tipo, 
+                               (coalesce(dha.hora_fim - dha.hora_inicio, '00:00:00')+coalesce(dha2.hora_fim - dha2.hora_inicio, '00:00:00')) as diff, 
+                               count( case when p.inteira then 1 end) as inteira, 
+                               count(case when p.meia then 1 end) as meia 
+                        from atividade a 
+                        inner join tipo_atividade tp on tp.id = a.tipo_atividade
+                        inner join inscricao_atividade ia on ia.atividade_id = a.id 
+                        inner join inscricao i on i.id = ia.inscricao_id and i.usuario_id = :UsuarioId
+                                                    and i.status = 'PAGAMENTO_CONFIRMADO'
+                        inner join edicao_semana es on es.id = a.edicao_semana_id and es.certificado_liberado = true
+                        left join atividade_turno at2 on at2.atividade_id = a.id 
+                        left join dia_hora_atividade dha on dha.turno_id = at2.turno_id 
+                        left join presenca p on p.inscricao_atividade_id = ia.id 
+                        left join dia_hora_atividade dha2 on dha2.atividade_edicao_id = a.id
+                        group by a.id, tp.cod_tipo, es.numero_edicao, a.titulo, es.data_inicio, es.data_fim, es.tema, dha.dia, dha.hora_fim, dha.hora_inicio, dha2.dia, dha2.hora_fim, dha2.hora_inicio
+                        ) b
+                    group by id, cod_tipo, numero_edicao, titulo, inteira, meia, data_inicio, data_fim, tema
+                ) c"""
+
+        return query_db(self.connection, query, {'UsuarioId': usuarioId}, model=CertificadoUsuario)

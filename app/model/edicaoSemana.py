@@ -18,7 +18,7 @@ class EdicaoSemanaCreate(BaseModel):
     data_inicio: date
     data_fim: date
     ativa: bool
-    quem_somos: Optional[str]
+    numero_edicao: int
 
 
 class EdicaoSemana(EdicaoSemanaCreate):
@@ -29,7 +29,20 @@ class EdicaoSemanaComComissaoIds(EdicaoSemana):
     comissao_edicao: Optional[List[int]]
 
 
-class EdicaoSemanaComComissao(EdicaoSemana):
+class EdicaoSemanaComDetalhes(EdicaoSemana):
+    certificado_liberado: bool
+    aceita_inscricao_atividade: bool
+    site_em_construcao: bool
+    logo: Optional[str]
+    logo_completa: Optional[str]
+    presidente_edicao: Optional[str]
+    assinatura_presidente_edicao: Optional[str]
+    direcao_instituto: Optional[str]
+    assinatura_direcao_instituto: Optional[str]
+    quem_somos: Optional[str]
+
+
+class EdicaoSemanaComComissao(EdicaoSemanaComDetalhes):
     comissao_edicao: Optional[List[Responsavel]]
 
 
@@ -57,3 +70,21 @@ class ComissaoEdicao(BaseModel):
     twitter: Optional[str]
     instagram: Optional[str]
     facebook: Optional[str]
+
+
+class EdicaoLogo(BaseModel):
+    edicao_semana_id: int
+    logo: str
+    tipo_logo: str
+
+
+class Assinatura(BaseModel):
+    edicao_semana_id: int
+    tipo_assinatura: str
+    assinatura: str
+    nome: str
+
+
+class QuemSomos(BaseModel):
+    quem_somos: str
+    edicao_semana_id: int

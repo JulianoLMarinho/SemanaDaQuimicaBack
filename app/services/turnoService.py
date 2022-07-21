@@ -45,8 +45,10 @@ class TurnoService:
         returnValue: List[TurnoComHorarios] = []
 
         turnos = self.obterTurnosByEdicao(edicaoId)
-        diaHorario = self.diaHorarioRepo.obterDiaHorariosByTurnos(
-            [t.id for t in turnos])
+        diaHorario = []
+        if len(turnos) > 0:
+            diaHorario = self.diaHorarioRepo.obterDiaHorariosByTurnos(
+                [t.id for t in turnos])
 
         for turno in turnos:
             horarios = list(

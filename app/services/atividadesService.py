@@ -3,6 +3,7 @@ from xmlrpc.client import Boolean, boolean
 
 from fastapi import Depends
 from app.model.atividades import Atividade, AtividadeCreate, AtividadeCreateComHorarioResponsavel, AtividadeLista, TipoAtividade, TurnoAtividade
+from app.model.certificadoUsuario import CertificadoUsuario
 from app.model.comum import OpcaoSelecao
 from app.repository.atividadesRepository import AtividadesRepository
 from app.repository.diaHorarioRepository import DiaHorarioRepository
@@ -132,3 +133,10 @@ class AtividadesService():
             except:
                 self.repo.RollbackTransaction()
                 raise Exception('Não foi possível salvar a atividade')
+
+    def obterListaCertificadosUsuario(self, usuarioId: int) -> List[CertificadoUsuario]:
+        return self.repo.obterListaCertificadosUsuario(usuarioId)
+
+    def getResponsaveisByAtividade(self, atividadeId: int) -> List[str]:
+        responsaveis = self.repo.getResponsaveisByAtividade(atividadeId)
+        return [a.nome_responsavel for a in responsaveis]

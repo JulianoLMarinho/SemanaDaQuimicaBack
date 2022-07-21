@@ -1,8 +1,10 @@
+import asyncio
 from typing import Any, List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
+from sse_starlette import EventSourceResponse
 from app.dependencies import get_current_active_user
 
-from app.model.edicaoSemana import CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds
+from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds, QuemSomos
 from app.services.edicaoSemanaService import EdicaoSemanaService
 
 
@@ -12,70 +14,147 @@ tags = ['Edição Semana']
 
 
 @router.get("", response_model=EdicaoSemanaComComissao)
-async def getEdicaoSemana(
+def getEdicaoSemana(
     service: EdicaoSemanaService = Depends()
 ):
-    return await service.getEdicaoAtiva()
+    return service.getEdicaoAtiva()
 
 
 @router.put("", dependencies=[Depends(get_current_active_user)])
-async def editarEdicaoSemana(
-    edicaoSemana: EdicaoSemanaComComissaoIds,
+def editarEdicaoSemana(
+    edicaoSemana: EdicaoSemana,
     service: EdicaoSemanaService = Depends()
 ):
-    return await service.editarCriarEdicaoSemana(edicaoSemana)
+    return service.editarCriarEdicaoSemana(edicaoSemana)
 
 
 @router.put("/tema", dependencies=[Depends(get_current_active_user)])
-async def updateEdicaoSemana(
+def updateEdicaoSemana(
     tema: dict,
     service: EdicaoSemanaService = Depends()
 ):
-    await service.updateTemaEdicaoAtiva(tema['tema'])
+    service.updateTemaEdicaoAtiva(tema['tema'])
 
 
 @router.get("/edicoes", dependencies=[Depends(get_current_active_user)], response_model=List[EdicaoSemanaComComissao])
-async def getEdicoes(
+def getEdicoes(
     service: EdicaoSemanaService = Depends()
 ):
-    return await service.getEdicoes()
+    return service.getEdicoes()
 
 
 @router.post("/carousel-image", dependencies=[Depends(get_current_active_user)])
-async def adicionarCarrousselImage(
+def adicionarCarrousselImage(
     carrousselImage: CarouselImageCreation,
     service: EdicaoSemanaService = Depends()
 ):
-    await service.adicionarCarrousselImage(carrousselImage)
+    service.adicionarCarrousselImage(carrousselImage)
+
+
+@router.get("/stream-results")
+async def message_stream(request: Request):
+    def new_messages():
+        # Add logic here to check for new messages
+        yield 'Hello World'
+
+    async def event_generator():
+        while True:
+            # If client closes connection, stop sending events
+            if await request.is_disconnected():
+                break
+
+            # Checks for new messages and return them to client if any
+            if new_messages():
+                yield {
+                    "event": "new_message",
+                    "id": "message_id",
+                    "retry": 15000,
+                    "data": "message_content"
+                }
+
+            await asyncio.sleep(5)
+
+    return EventSourceResponse(event_generator())
 
 
 @router.get("/carousel-edicao/{edicaoId}", response_model=List[CarouselImage])
-async def getCarouselEdicao(
+def getCarouselEdicao(
     edicaoId: int,
     service: EdicaoSemanaService = Depends()
 ):
-    return await service.getCarouselEdicao(edicaoId)
+    return service.getCarouselEdicao(edicaoId)
 
 
 @router.put("/carousel-image", dependencies=[Depends(get_current_active_user)])
-async def editarCarouselImage(
+def editarCarouselImage(
     carouselImage: CarouselImage,
     service: EdicaoSemanaService = Depends()
 ):
-    await service.editarCarouselImage(carouselImage)
+    service.editarCarouselImage(carouselImage)
 
 
 @router.delete("/carousel-image/{carouselImageId}", dependencies=[Depends(get_current_active_user)])
-async def deletarCarouselImage(
+def deletarCarouselImage(
     carouselImageId: int,
     service: EdicaoSemanaService = Depends()
 ):
-    await service.deletarCarouselImage(carouselImageId)
+    service.deletarCarouselImage(carouselImageId)
 
 
-@router.get("/quem-somos/{edicaoSemanaId}", response_model=List[ComissaoEdicao])
-async def obterQuemSomos(
+@router.put("/quem-somos", dependencies=[Depends(get_current_active_user)])
+def salvarQuemSomos(
+    quemSomos: QuemSomos,
+    service: EdicaoSemanaService = Depends()
+):
+    service.salvarQuemSomos(quemSomos.quem_somos, quemSomos.edicao_semana_id)
+
+
+@router.get("/quem-somos/{edicaoSemanaId}", response_model=List[ComissaoEdicao], dependencies=[Depends(get_current_active_user)])
+def obterQuemSomos(
     edicaoSemanaId: int,
     service: EdicaoSemanaService = Depends()
 ):
-    return await service.obterQuemSomos(edicaoSemanaId)
+    return service.obterQuemSomos(edicaoSemanaId)
+
+
+@router.put("/liberar-certificado/{edicaoSemanaId}/{liberar}", dependencies=[Depends(get_current_active_user)])
+def liberarCertificados(
+    edicaoSemanaId: int,
+    liberar: bool,
+    service: EdicaoSemanaService = Depends()
+):
+    service.liberarCertificados(edicaoSemanaId, liberar)
+
+
+@router.put("/aceitar-inscricao-atividade/{edicaoSemanaId}/{aceitarInscricao}", dependencies=[Depends(get_current_active_user)])
+def aceitarInscricoesAtividades(
+    edicaoSemanaId: int,
+    aceitarInscricao: bool,
+    service: EdicaoSemanaService = Depends()
+):
+    service.aceitarInscricoesAtividades(edicaoSemanaId, aceitarInscricao)
+
+
+@router.post("/salvar-logo", dependencies=[Depends(get_current_active_user)])
+def salvarLogo(
+    edicaoLogo: EdicaoLogo,
+    service: EdicaoSemanaService = Depends()
+):
+    service.salvarLogo(edicaoLogo)
+
+
+@router.post("/salvar-assinatura", dependencies=[Depends(get_current_active_user)])
+def salvarLogo(
+    assinatura: Assinatura,
+    service: EdicaoSemanaService = Depends()
+):
+    service.salvarAssinaturaPresidente(assinatura)
+
+
+@router.put("/site-em-construcao/{edicaoSemanaId}/{siteEmContrucao}", dependencies=[Depends(get_current_active_user)])
+def aceitarInscricoesAtividades(
+    edicaoSemanaId: int,
+    siteEmContrucao: bool,
+    service: EdicaoSemanaService = Depends()
+):
+    service.ativarSiteEmConstrucao(edicaoSemanaId, siteEmContrucao)

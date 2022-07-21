@@ -8,8 +8,8 @@ class CoresEdicaoService:
     def __init__(self, repository: CoresEdicaoRepository = Depends()):
         self.repo = repository
 
-    async def salvarCoresEdicao(self, coresEdicao: CoresEdicaoCreate):
-        await self.repo.salvarCoresEdicao(coresEdicao)
+    def salvarCoresEdicao(self, coresEdicao: CoresEdicaoCreate):
+        self.repo.salvarCoresEdicao(coresEdicao)
 
-    async def obterCoresEdicao(self, edicaoId: int) -> CoresEdicaoCreate:
-        return await self.repo.obterCoresEdicao(edicaoId)
+    def obterCoresEdicao(self, edicaoId: int) -> CoresEdicaoCreate:
+        return self.repo.obterCoresEdicao(edicaoId)

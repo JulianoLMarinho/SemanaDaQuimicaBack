@@ -11,32 +11,32 @@ tags = ['Patrocinador']
 
 
 @router.post("", dependencies=[Depends(get_current_active_user)])
-async def salvarPatrocinador(
+def salvarPatrocinador(
     patrocinador: PatrocinadorCreate,
     service: PatrocinadorService = Depends()
 ):
-    await service.salvarNovoPatrocinador(patrocinador)
+    service.salvarNovoPatrocinador(patrocinador)
 
 
 @router.get("/{edicaoId}")
-async def obterPatrocindorEdicao(
+def obterPatrocindorEdicao(
     edicaoId: int,
     service: PatrocinadorService = Depends()
 ):
-    return await service.obterPatrocindorEdicao(edicaoId)
+    return service.obterPatrocindorEdicao(edicaoId)
 
 
 @router.put("", dependencies=[Depends(get_current_active_user)])
-async def atualizarPatrocinador(
+def atualizarPatrocinador(
     patrocinador: Patrocinador,
     service: PatrocinadorService = Depends()
 ):
-    await service.atualizarPatrocinador(patrocinador)
+    service.atualizarPatrocinador(patrocinador)
 
 
 @router.delete("/{patrocinadorId}", dependencies=[Depends(get_current_active_user)])
-async def deletarPatrocinador(
+def deletarPatrocinador(
     patrocinadorId: int,
     service: PatrocinadorService = Depends()
 ):
-    await service.deletarPatrocinador(patrocinadorId)
+    service.deletarPatrocinador(patrocinadorId)

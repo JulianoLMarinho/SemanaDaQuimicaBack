@@ -9,14 +9,14 @@ class PatrocinadorService:
     def __init__(self, repository: PatrocinadorRepository = Depends()):
         self.repo = repository
 
-    async def salvarNovoPatrocinador(self, patrocinador: PatrocinadorCreate):
-        await self.repo.salvarNovoPatrocinador(patrocinador)
+    def salvarNovoPatrocinador(self, patrocinador: PatrocinadorCreate):
+        self.repo.salvarNovoPatrocinador(patrocinador)
 
-    async def obterPatrocindorEdicao(self, edicaoId: int) -> List[Patrocinador]:
-        return await self.repo.obterPatrocindorEdicao(edicaoId)
+    def obterPatrocindorEdicao(self, edicaoId: int) -> List[Patrocinador]:
+        return self.repo.obterPatrocindorEdicao(edicaoId)
 
-    async def atualizarPatrocinador(self, patrocinador: Patrocinador):
-        await self.repo.atualizarPatrocinador(patrocinador)
+    def atualizarPatrocinador(self, patrocinador: Patrocinador):
+        self.repo.atualizarPatrocinador(patrocinador)
 
-    async def deletarPatrocinador(self, patrocinadorId: int):
-        await self.repo.deletarPatrocinador(patrocinadorId)
+    def deletarPatrocinador(self, patrocinadorId: int):
+        self.repo.deletarPatrocinador(patrocinadorId)

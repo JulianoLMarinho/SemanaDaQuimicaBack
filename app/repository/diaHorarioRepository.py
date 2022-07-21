@@ -16,7 +16,8 @@ class DiaHorarioRepository(BaseRepository):
         query = """SELECT distinct dha.* FROM dia_hora_atividade dha
                     LEFT JOIN atividade_turno at ON at.turno_id = dha.turno_id
                     WHERE atividade_edicao_id IN :AtividadesIds
-                    OR at.atividade_id IN :AtividadesIds"""
+                    OR at.atividade_id IN :AtividadesIds
+                    ORDER BY dha.dia"""
         return query_db(self.connection, query, {
             'AtividadesIds': atividadesIds}, model=DiaHoraAtividade)
 

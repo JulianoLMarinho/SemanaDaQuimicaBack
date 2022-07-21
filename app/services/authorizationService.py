@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from app.jwt.decode import decode
 from app.model.authRequestBody import AuthRequestBody
 from app.model.authResponseBody import AuthResponseBody
 from app.model.usuario import Usuario
@@ -23,11 +24,43 @@ class AuthorizationService:
 
     def authorize(self, authRequest: AuthRequestBody):
         if authRequest.source == 'GOOGLE':
-            return self.authorizeGoogle(authRequest)
+            return self.authorizeFirebase(authRequest)
+
+    def authorizeFirebase(self, authRequest: AuthRequestBody) -> AuthResponseBody:
+        idinfo = decode(authRequest.token)
+        userGoogleId = idinfo['user_id']
+        userEmail = idinfo['email']
+        user = self.userService.getUserByEmailAndGoogleUser(
+            userEmail, userGoogleId)
+        if user == None:
+            user = Usuario(id=0, email=idinfo['email'], id_google=userGoogleId)
+            user.perfil = 'aluno'
+            user.permissoes = []
+            user.url_foto_perfil = idinfo['picture'] if 'picture' in idinfo else None
+            self.userService.addUser(user)
+            key = os.getenv("JWT_KEY")
+            payloadUser = user.dict()
+            payloadUser['sub'] = user.email
+            expirationDate = datetime.utcnow() + timedelta(minutes=60)
+            payloadUser['exp'] = expirationDate
+            jwtToken = jwt.encode(payloadUser, key)
+            return AuthResponseBody(usuario=user, responseType='OK', access_token=jwtToken)
+        else:
+            user.permissoes = []
+            user.url_foto_perfil = idinfo['picture'] if 'picture' in idinfo else None
+            user.permissoes = self.userService.getPermissaoUsuario(
+                user.id)
+            key = os.getenv("JWT_KEY")
+            payloadUser = user.dict()
+            payloadUser['sub'] = user.email
+            expirationDate = datetime.utcnow() + timedelta(minutes=60)
+            payloadUser['exp'] = expirationDate
+            jwtToken = jwt.encode(payloadUser, key)
+            return AuthResponseBody(usuario=user, responseType='OK', access_token=jwtToken)
 
     def authorizeGoogle(self, authRequest: AuthRequestBody) -> AuthResponseBody:
         idinfo = id_token.verify_oauth2_token(authRequest.token, requests.Request(
-        ), os.getenv("GOOGLE_KEY"))
+        ), os.getenv("GOOGLE_KEY"), 50)
         userGoogleId = idinfo['sub']
         userEmail = idinfo['email']
         user = self.userService.getUserByEmail(userEmail)
@@ -52,7 +85,7 @@ class AuthorizationService:
                 key = os.getenv("JWT_KEY")
                 payloadUser = user.dict()
                 payloadUser['sub'] = user.email
-                expirationDate = datetime.utcnow() + timedelta(minutes=120)
+                expirationDate = datetime.utcnow() + timedelta(minutes=60)
                 payloadUser['exp'] = expirationDate
                 jwtToken = jwt.encode(payloadUser, key)
                 return AuthResponseBody(usuario=user, responseType='OK', access_token=jwtToken)

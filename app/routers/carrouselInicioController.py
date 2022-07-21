@@ -14,7 +14,7 @@ tags = ["Início"]
 
 
 @router.get("", response_model=List[CarrouselInicio])
-async def get(
+def get(
     service: CarrouselInicioService = Depends()
 ):
     return service.getImages()

@@ -11,7 +11,7 @@ tags = ['Usuários']
 
 
 @router.get("", response_model=Usuario)
-async def get_user(
+def get_user(
     service: UserService = Depends(),
     usuario: Usuario = Depends(get_current_active_user)
 ):
@@ -19,17 +19,17 @@ async def get_user(
 
 
 @router.get("/getAll", response_model=Usuario)
-async def get_all(service: UserService = Depends()):
+def get_all(service: UserService = Depends()):
     return service.get_all()
 
 
 @router.get("/getUserByEmail", response_model=Usuario)
-async def get_all(service: UserService = Depends()):
+def get_all(service: UserService = Depends()):
     return service.getUserByEmail('j.delimamarinho@gmail.com')
 
 
 @router.post("")
-async def addUser(
+def addUser(
     usuario: Usuario,
     service: UserService = Depends()
 ):
@@ -37,7 +37,7 @@ async def addUser(
 
 
 @router.put("")
-async def updateUser(
+def updateUser(
     usuario: Usuario,
     service: UserService = Depends(),
     usuarioLogado: Usuario = Depends(get_current_active_user)
