@@ -6,9 +6,12 @@ from app.sql.crud import exec_sql, query_db
 
 class UserRepository(BaseRepository):
 
-    def get_all_users(self):
-        query = "SELECT * FROM usuario"
-        return query_db(self.connection, query)
+    def get_all_users(self) -> List[Usuario]:
+        query = f"""SELECT u.*, pu.codigo_perfil AS perfil FROM usuario u
+                    INNER JOIN perfil_usuario pu ON pu.id = u.perfil_usuario"""
+        result = query_db(connection=self.connection,
+                          query=query, model=Usuario)
+        return result
 
     def getUserByEmail(self, email: str) -> Usuario:
         query = f"""SELECT u.*, pu.codigo_perfil AS perfil FROM usuario u
@@ -98,3 +101,14 @@ class UserRepository(BaseRepository):
                     INNER JOIN usuario u ON u.perfil_usuario = pp.id_perfil
                     WHERE u.id = :ID"""
         return query_db(self.connection, query, {"ID": userId})
+
+    def alterarPerfilUsuario(self, usuarioId: int, perfilId: int):
+        query = """UPDATE usuario
+                    SET perfil_usuario = :PerfilUsuario
+                    WHERE id = :UsuarioId"""
+        params = {
+            'PerfilUsuario': perfilId,
+            'UsuarioId': usuarioId
+        }
+
+        exec_sql(self.connection, query, params)

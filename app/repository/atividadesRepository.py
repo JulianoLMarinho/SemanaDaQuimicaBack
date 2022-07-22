@@ -50,7 +50,7 @@ class AtividadesRepository(BaseRepository):
                     at.turno_id,
                     ae.aceita_inscricao,
                     ae.valor,
-                    count(1) - 1 as total_inscritos,
+                    sum(case when i.status <> 'CANCELADA' then 1 else 0 end) as total_inscritos,
                     ae.atividade_presencial,
                     ae.local,
                     ae.link
@@ -65,6 +65,34 @@ class AtividadesRepository(BaseRepository):
                     GROUP BY ae.id, ae.titulo, ae.ativa, ta.cod_tipo, ae.descricao_atividade, ae.vagas, ta.nome_tipo, t.nome_turno, at.turno_id, ae.aceita_inscricao, ae.valor
                     ORDER BY ae.titulo"""
         return query_db(self.connection, query, {'EdicaoId': idEdicao, 'TipoAtividade': tipoAtividade}, AtividadeLista)
+
+    def getAtividadesDetalhesByIds(self, atividadeIds: List[int]) -> List[AtividadeLista]:
+        query = """SELECT 
+                    ae.id,
+                    ae.titulo,
+                    ae.ativa,
+                    ae.descricao_atividade,
+                    ae.vagas,
+                    ta.nome_tipo,
+                    ta.cod_tipo,
+                    t.nome_turno,
+                    at.turno_id,
+                    ae.aceita_inscricao,
+                    ae.valor,
+                    sum(case when i.status <> 'CANCELADA' then 1 else 0 end) as total_inscritos,
+                    ae.atividade_presencial,
+                    ae.local,
+                    ae.link
+                    FROM atividade ae
+                    INNER JOIN tipo_atividade ta ON ta.id = ae.tipo_atividade
+                    LEFT JOIN atividade_turno at ON at.atividade_id = ae.id
+                    LEFT JOIN turno t ON t.id = at.turno_id
+                    LEFT JOIN inscricao_atividade ia ON ia.atividade_id = ae.id
+                    LEFT JOIN inscricao i ON i.id = ia.inscricao_id
+                    WHERE ae.id IN :AtividadeIds
+                    GROUP BY ae.id, ae.titulo, ae.ativa, ta.cod_tipo, ae.descricao_atividade, ae.vagas, ta.nome_tipo, t.nome_turno, at.turno_id, ae.aceita_inscricao, ae.valor
+                    ORDER BY ae.titulo"""
+        return query_db(self.connection, query, {'AtividadeIds': atividadeIds}, AtividadeLista)
 
     def getResponsaveisByAtividades(self, atividadesIds: List[int]) -> List[ResponsavelAtividade]:
         query = """SELECT r.*, ar.id_atividade 

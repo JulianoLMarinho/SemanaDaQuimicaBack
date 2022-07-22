@@ -1,6 +1,7 @@
 
 from typing import List
 from fastapi import APIRouter, Depends
+from app.dependencies import current_user_is_admin
 from app.model.comum import OpcaoSelecao
 
 from app.model.turno import Turno, TurnoComHorarios, TurnoCriacao, TurnoCriacaoComHorario
@@ -20,7 +21,7 @@ def getByEdicao(
     return service.obterTurnosComHorario(EdicaoId)
 
 
-@router.post('', response_model=bool)
+@router.post('', response_model=bool, dependencies=[Depends(current_user_is_admin)])
 def criarEditarTurno(
     turno: TurnoCriacaoComHorario,
     service: TurnoService = Depends()

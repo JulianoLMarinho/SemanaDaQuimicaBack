@@ -1,7 +1,8 @@
+import asyncio
 from typing import List
 from fastapi import APIRouter, BackgroundTasks, Depends
 
-from app.dependencies import get_current_active_user
+from app.dependencies import current_user_is_admin, get_current_active_user
 from app.model.atividades import Atividade
 from app.model.inscricao import AtividadeUsuario, InformarPagamento, Inscricao, InscricaoAtividades
 from app.services.inscricaoService import InscricaoService
@@ -11,15 +12,19 @@ router = APIRouter()
 prefix = '/inscricao'
 tags = ['Inscrição']
 
+lock = asyncio.Lock()
+
 
 @router.post("")
-def adicionarInscricao(
+async def adicionarInscricao(
     inscricao: InscricaoAtividades,
     background_task: BackgroundTasks,
     service: InscricaoService = Depends(),
     usuario=Depends(get_current_active_user),
 ):
-    inscricaoId = service.criarInscricao(inscricao)
+    inscricaoId = await service.criarInscricao(inscricao, lock)
+    if (isinstance(inscricaoId, list)):
+        return inscricaoId
     background_task.add_task(
         service.enviarEmailConfirmacaoInscricao, usuario['email'], inscricaoId)
 
@@ -44,14 +49,14 @@ def cancelarInscricao(
         service.enviarEmailCancelamentoInscricao, inscricaoId)
 
 
-@router.get("/confirmacao", dependencies=[Depends(get_current_active_user)], response_model=List[Inscricao])
+@router.get("/confirmacao", dependencies=[Depends(current_user_is_admin)], response_model=List[Inscricao])
 def obterInscricoes(
     service: InscricaoService = Depends()
 ):
     return service.obterInscricoesConfirmacao()
 
 
-@router.put("/confirmacao/{inscricao_id}", dependencies=[Depends(get_current_active_user)])
+@router.put("/confirmacao/{inscricao_id}", dependencies=[Depends(current_user_is_admin)])
 def confirmarInscricao(
     inscricao_id: int,
     background_task: BackgroundTasks,
@@ -62,7 +67,7 @@ def confirmarInscricao(
         service.enviarEmailConfirmacaoPagamentoInscricao, inscricao_id)
 
 
-@router.get("/total-pagamento-informado", dependencies=[Depends(get_current_active_user)])
+@router.get("/total-pagamento-informado", dependencies=[Depends(current_user_is_admin)])
 def totalInscricoesPagamentoInformado(
     service: InscricaoService = Depends()
 ):

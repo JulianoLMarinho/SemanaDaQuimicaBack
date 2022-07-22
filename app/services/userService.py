@@ -30,3 +30,9 @@ class UserService:
 
     def getPermissaoUsuario(self, userId: int) -> List[str]:
         return self.repo.getPermissaoUsuario(userId)
+
+    def getAll(self) -> List[Usuario]:
+        return self.repo.get_all_users()
+
+    def alterarPerfilUsuario(self, usuarioId: int, perfilId: int):
+        self.repo.alterarPerfilUsuario(usuarioId, perfilId)

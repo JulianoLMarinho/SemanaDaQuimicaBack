@@ -1,29 +1,46 @@
+import asyncio
 from typing import List
 from fastapi import Depends
 from app.model.atividades import Atividade
 from app.model.inscricao import AtividadeUsuario, Inscricao, InscricaoAtividades
+from app.repository.atividadesRepository import AtividadesRepository
 from app.repository.inscricaoRepository import InscricaoRepository
 from app.services.emailService import EmailService
 
 
 class InscricaoService:
-    def __init__(self, repo: InscricaoRepository = Depends(), emailService: EmailService = Depends()):
+    def __init__(self, repo: InscricaoRepository = Depends(), atividadeRepo: AtividadesRepository = Depends(), emailService: EmailService = Depends()):
         self.repo = repo
         self.email = emailService
+        self.atividadeRepo = atividadeRepo
 
-    def criarInscricao(self, inscricao: InscricaoAtividades):
+    async def criarInscricao(self, inscricao: InscricaoAtividades, lock: asyncio.Lock):
+
         inscricaoId = 0
         with self.repo.session.begin():
             try:
+                await lock.acquire()
+                atividades = self.atividadeRepo.getAtividadesDetalhesByIds(
+                    inscricao.atividades)
+                erros = []
+                for atividade in atividades:
+                    if atividade.total_inscritos >= atividade.vagas:
+                        erros.append(
+                            f"A atividade {atividade.titulo} não possui mais vagas.")
+                if len(erros) > 0:
+                    self.repo.session.rollback()
+                    return erros
                 inscricaoId = self.repo.adicionarInscricao(inscricao)
                 for evento in inscricao.atividades:
                     self.repo.adicionarAtividadeInscricao(
                         inscricaoId.id, evento)
                 self.repo.session.commit()
-                return inscricaoId.id
             except Exception as e:
                 self.repo.session.rollback()
                 raise e
+            finally:
+                lock.release()
+        return inscricaoId.id
 
     def obterAtividadesUsuario(self, usuario_id) -> List[AtividadeUsuario]:
         return self.repo.obterAtividadesUsuario(usuario_id)

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.dependencies import get_current_active_user
+from app.dependencies import current_user_is_admin, get_current_active_user
 from app.model.presenca import Presenca
 from app.services.presencaService import PresencaService
 
@@ -18,7 +18,7 @@ def getAlunosPresenca(
     return service.getAlunosPresenca(atividadeId)
 
 
-@router.put("", dependencies=[Depends(get_current_active_user)])
+@router.put("", dependencies=[Depends(current_user_is_admin)])
 def salvarPresenca(
     presenca: Presenca,
     service: PresencaService = Depends()

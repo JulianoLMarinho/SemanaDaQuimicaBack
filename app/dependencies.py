@@ -31,5 +31,17 @@ def get_current_user(token: HTTPAuthorizationCredentials = Depends(application_t
     return user
 
 
-def get_current_active_user(current_user: Usuario = Depends(get_current_user)):
+def get_current_active_user(current_user: Usuario = Depends(get_current_user)) -> Usuario:
     return current_user
+
+
+def current_user_is_admin(current_user: Usuario = Depends(get_current_user)) -> Usuario:
+    if current_user['perfil_usuario'] == 1:
+        return current_user
+    else:
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not allowed to access this resource",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        raise credentials_exception

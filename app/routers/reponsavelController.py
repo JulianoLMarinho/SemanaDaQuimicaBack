@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends
-from app.dependencies import get_current_active_user
+from app.dependencies import current_user_is_admin, get_current_active_user
 from app.model.comum import OpcaoSelecao
 
 from app.model.responsavel import ComissaoCreate, Responsavel
@@ -70,7 +70,7 @@ def salvarComissaoEdicao(
     service.atualizarResponsavel(comissao)
 
 
-@router.delete("/{responsavel_id}", dependencies=[Depends(get_current_active_user)])
+@router.delete("/{responsavel_id}", dependencies=[Depends(current_user_is_admin)])
 def deletarResponsavel(
     responsavel_id: int,
     service: ResponsavelService = Depends()
