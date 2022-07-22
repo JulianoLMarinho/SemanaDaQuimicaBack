@@ -88,51 +88,50 @@ class AtividadesService():
         return self.repo.tiposAtividades()
 
     def criarAtividade(self, atividade: AtividadeCreateComHorarioResponsavel) -> Boolean:
-        with self.repo.session.begin():
-            try:
-                atividadeId = self.repo.criarAtividade(atividade)
-                if atividade.turno_atividade != None:
-                    self.repo.salvarTurnoAtividade(
-                        atividade.turno_atividade, atividadeId.id)
-                else:
-                    for hor in atividade.horarios:
-                        hor.atividade_edicao_id = atividadeId.id
-                    self.repo.salvarHorariosAtividades(atividade.horarios)
-                if len(atividade.responsavel_atividade) > 0:
-                    for res in atividade.responsavel_atividade:
-                        self.repo.salvarResponsavelAtividade(
-                            atividadeId.id, res)
-                self.repo.session.commit()
-                return True
-            except:
-                self.repo.session.rollback()
-                return False
+        trans = self.repo.connection.begin()
+        try:
+            atividadeId = self.repo.criarAtividade(atividade)
+            if atividade.turno_atividade != None:
+                self.repo.salvarTurnoAtividade(
+                    atividade.turno_atividade, atividadeId.id)
+            else:
+                for hor in atividade.horarios:
+                    hor.atividade_edicao_id = atividadeId.id
+                self.repo.salvarHorariosAtividades(atividade.horarios)
+            if len(atividade.responsavel_atividade) > 0:
+                for res in atividade.responsavel_atividade:
+                    self.repo.salvarResponsavelAtividade(
+                        atividadeId.id, res)
+            trans.commit()
+            return True
+        except:
+            trans.rollback()
+            return False
 
     def atualizarAtividade(self, atividade: AtividadeCreate) -> Boolean:
-        with self.repo.session.begin():
-            try:
-                self.repo.atualizarAtividade(atividade)
-                self.turnosService.deletarTurnosByAtividade(atividade.id)
-                self.diaHoraRepo.deletetarHorariosByAtividade(atividade.id)
-                self.responsavelRepo.deletarResponsavelAtividadeByAtividade(
-                    atividade.id)
-
-                if atividade.turno_atividade != None:
-                    self.repo.salvarTurnoAtividade(
-                        atividade.turno_atividade, atividade.id)
-                else:
-                    for hor in atividade.horarios:
-                        hor.atividade_edicao_id = atividade.id
-                    self.repo.salvarHorariosAtividades(atividade.horarios)
-                if len(atividade.responsavel_atividade) > 0:
-                    for res in atividade.responsavel_atividade:
-                        self.repo.salvarResponsavelAtividade(
-                            atividade.id, res)
-                self.repo.session.commit()
-                return True
-            except:
-                self.repo.RollbackTransaction()
-                raise Exception('Não foi possível salvar a atividade')
+        transaction = self.repo.connection.begin()
+        try:
+            self.repo.atualizarAtividade(atividade)
+            self.turnosService.deletarTurnosByAtividade(atividade.id)
+            self.diaHoraRepo.deletetarHorariosByAtividade(atividade.id)
+            self.responsavelRepo.deletarResponsavelAtividadeByAtividade(
+                atividade.id)
+            if atividade.turno_atividade != None:
+                self.repo.salvarTurnoAtividade(
+                    atividade.turno_atividade, atividade.id)
+            else:
+                for hor in atividade.horarios:
+                    hor.atividade_edicao_id = atividade.id
+                self.repo.salvarHorariosAtividades(atividade.horarios)
+            if len(atividade.responsavel_atividade) > 0:
+                for res in atividade.responsavel_atividade:
+                    self.repo.salvarResponsavelAtividade(
+                        atividade.id, res)
+            transaction.commit()
+            return True
+        except:
+            transaction.rollback()
+            raise Exception('Não foi possível salvar a atividade')
 
     def obterListaCertificadosUsuario(self, usuarioId: int) -> List[CertificadoUsuario]:
         return self.repo.obterListaCertificadosUsuario(usuarioId)

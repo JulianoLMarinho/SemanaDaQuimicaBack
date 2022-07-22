@@ -3,7 +3,7 @@ from app.model.atividades import Atividade
 from app.model.inscricao import AtividadeUsuario, Inscricao, InscricaoCreate
 from app.model.usuario import Usuario
 from app.repository.baseRepository import BaseRepository
-from app.sql.crud import exec_session_sql, exec_sql, insert_command_from_models, query_db, query_db_session
+from app.sql.crud import exec_sql, exec_sql, insert_command_from_models, query_db, query_db
 
 
 class InscricaoRepository(BaseRepository):
@@ -12,7 +12,7 @@ class InscricaoRepository(BaseRepository):
         columnsTable = InscricaoCreate.construct().__fields__
         query = insert_command_from_models(
             'inscricao', columnsTable, [inscricao])
-        return query_db_session(self.session, query[0] + " RETURNING id", query[1], single=True)
+        return query_db(self.connection, query[0] + " RETURNING id", query[1], single=True)
 
     def adicionarAtividadeInscricao(self, inscricao_id: int, atividade_id: int):
         query = """INSERT INTO inscricao_atividade(inscricao_id, atividade_id) VALUES (:InscricaoId, :AtividadeId)"""
@@ -20,7 +20,7 @@ class InscricaoRepository(BaseRepository):
             "InscricaoId": inscricao_id,
             "AtividadeId": atividade_id
         }
-        exec_session_sql(self.session, query, params)
+        exec_sql(self.connection, query, params)
 
     def obterAtividadesUsuario(self, usuario_id) -> List[AtividadeUsuario]:
         query = """SELECT ia.atividade_id, i.status, ia.inscricao_id FROM inscricao_atividade ia

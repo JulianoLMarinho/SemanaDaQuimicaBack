@@ -2,7 +2,7 @@ from typing import List
 from sqlalchemy import true
 from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaCreate
 from app.repository.baseRepository import BaseRepository
-from app.sql.crud import exec_session_sql, exec_sql, insert_command_from_models, query_db, query_db_session, update_command_from_model
+from app.sql.crud import exec_sql, exec_sql, insert_command_from_models, query_db, query_db, update_command_from_model
 
 
 class EdicaoSemanaRepository(BaseRepository):
@@ -41,16 +41,16 @@ class EdicaoSemanaRepository(BaseRepository):
         columnsTable = EdicaoSemanaCreate.construct().__fields__
         query = insert_command_from_models(
             'edicao_semana', columnsTable, [edicaoSemana])
-        return query_db_session(self.session, query[0] + " RETURNING id", query[1], single=True)
+        return query_db(self.connection, query[0] + " RETURNING id", query[1], single=True)
 
     def editarEdicaoSemana(self, edicaoSemana: EdicaoSemana):
         query = update_command_from_model(
             'edicao_semana', EdicaoSemana.construct().__fields__) + " WHERE id = :id"
-        exec_session_sql(self.session, query, edicaoSemana.dict())
+        exec_sql(self.connection, query, edicaoSemana.dict())
 
     def deletarEdicaoSemana(self, edicaoSemanaId: int):
         query = f"DELETE FROM edicao_semana WHERE id = {edicaoSemanaId}"
-        exec_session_sql(self.session, query)
+        exec_sql(self.connection, query)
 
     def obterQuemSomos(self, edicaoSemanaId: int) -> List[ComissaoEdicao]:
         query = f"""SELECT r.*, ec.edicao_semana_id FROM responsavel r

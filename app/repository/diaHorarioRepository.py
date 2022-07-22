@@ -2,7 +2,7 @@ from typing import List
 from app.model.atividades import DiaHoraAtividade
 from app.model.turno import DiaHoraTurno
 from app.repository.baseRepository import BaseRepository
-from app.sql.crud import exec_session_sql, query_db
+from app.sql.crud import exec_sql, query_db
 
 
 class DiaHorarioRepository(BaseRepository):
@@ -23,8 +23,8 @@ class DiaHorarioRepository(BaseRepository):
 
     def deletetarHorariosByAtividade(self, atividadeId: int):
         query = f"DELETE FROM dia_hora_atividade WHERE atividade_edicao_id = {atividadeId}"
-        exec_session_sql(self.session, query)
+        exec_sql(self.connection, query)
 
     def deletetarHorariosByTurno(self, turnoId: int):
         query = f"DELETE FROM dia_hora_atividade WHERE turno_id = {turnoId}"
-        exec_session_sql(self.session, query)
+        exec_sql(self.connection, query)

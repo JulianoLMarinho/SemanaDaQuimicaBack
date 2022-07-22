@@ -4,7 +4,7 @@ from app.model.certificadoUsuario import CertificadoUsuario
 from app.model.comum import OpcaoSelecao
 from app.model.usuarioModel import Usuario
 from app.repository.baseRepository import BaseRepository
-from app.sql.crud import columns, columnsList, exec_session_sql, exec_sql, insert_command_from_models, query_db, query_db_session, update_command_from_model
+from app.sql.crud import columns, columnsList, exec_sql, insert_command_from_models, query_db, update_command_from_model
 from app.schemas.db import Usuario
 
 
@@ -116,28 +116,28 @@ class AtividadesRepository(BaseRepository):
         columnsTable = AtividadeCreate.construct().__fields__
         query = insert_command_from_models(
             'atividade', columnsTable, [atividade])
-        return query_db_session(self.session, query[0] + " RETURNING id", query[1], single=True)
+        return query_db(self.connection, query[0] + " RETURNING id", query[1], single=True)
 
     def salvarHorariosAtividades(self, horarios: List[DiaHoraAtividade]):
         columnsTable = DiaHoraAtividade.construct().__fields__
         query = insert_command_from_models(
             'dia_hora_atividade', columnsTable, horarios)
-        exec_session_sql(self.session, query[0], query[1])
+        exec_sql(self.connection, query[0], query[1])
 
     def salvarTurnoAtividade(self, turnoId, atividadeId):
         query = f"""INSERT INTO atividade_turno VALUES({atividadeId}, {turnoId})"""
-        exec_session_sql(self.session, query)
+        exec_sql(self.connection, query)
 
     def salvarResponsavelAtividade(self, atividadeId, responsavelId):
         query = f"""INSERT INTO atividade_responsavel VALUES ({atividadeId}, {responsavelId})"""
-        exec_session_sql(self.session, query)
+        exec_sql(self.connection, query)
 
     def atualizarAtividade(self, atividade: AtividadeCreate):
         g = update_command_from_model(
             'atividade', AtividadeCreate.construct().__fields__)
         g += " WHERE id = :id"
 
-        exec_session_sql(self.session, g, atividade.dict())
+        exec_sql(self.connection, g, atividade.dict())
 
     def obterListaCertificadosUsuario(self, usuarioId: int) -> List[CertificadoUsuario]:
         query = """select id, numero_edicao, cod_tipo, data_inicio, data_fim, tema, titulo, (inteira*1.0 + meia/2.0)/(dias*1.0) as percentual_presenca, duracao_atividade from (

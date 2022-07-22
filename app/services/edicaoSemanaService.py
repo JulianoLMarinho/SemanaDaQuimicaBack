@@ -43,18 +43,18 @@ class EdicaoSemanaService:
         return self.repo.adicionarEdicaoSemana(edicaoSemana)
 
     def editarCriarEdicaoSemana(self, edicaoSemana: EdicaoSemana):
-        with self.repo.session.begin():
-            try:
-                if edicaoSemana.id == None:
-                    edicaoInsertId = self.adicionarEdicaoSemana(edicaoSemana)
-                    edicaoSemana.id = edicaoInsertId.id
-                else:
-                    self.repo.editarEdicaoSemana(edicaoSemana)
-                self.repo.session.commit()
-                return True
-            except:
-                self.repo.session.rollback()
-                return False
+        transaction = self.repo.connection.begin()
+        try:
+            if edicaoSemana.id == None:
+                edicaoInsertId = self.adicionarEdicaoSemana(edicaoSemana)
+                edicaoSemana.id = edicaoInsertId.id
+            else:
+                self.repo.editarEdicaoSemana(edicaoSemana)
+            transaction.commit()
+            return True
+        except:
+            transaction.rollback()
+            return False
 
     def deletarEdicaoSemana(self, edicaoSemanaId: int):
         self.repo.deletarEdicaoSemana(edicaoSemanaId)

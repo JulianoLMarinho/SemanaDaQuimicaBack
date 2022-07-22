@@ -2,7 +2,7 @@ from typing import List
 from app.model.comum import OpcaoSelecao
 from app.model.responsavel import Responsavel, ResponsavelCreate
 from app.repository.baseRepository import BaseRepository
-from app.sql.crud import exec_session_sql, exec_sql, insert_command_from_models, query_db, update_command_from_model
+from app.sql.crud import exec_sql, exec_sql, insert_command_from_models, query_db, update_command_from_model
 
 
 class ResponsavelRepository(BaseRepository):
@@ -28,11 +28,11 @@ class ResponsavelRepository(BaseRepository):
 
     def deletarResponsavelAtividadeByAtividade(self, atividadeId: int):
         query = f"DELETE FROM atividade_responsavel WHERE id_atividade = {atividadeId}"
-        exec_session_sql(self.session, query)
+        exec_sql(self.connection, query)
 
     def deletarEdicaoComissaoByEdicao(self, edicaoSemanaId: int):
         query = f"DELETE FROM edicao_comissao WHERE edicao_semana_id = {edicaoSemanaId}"
-        exec_session_sql(self.session, query)
+        exec_sql(self.connection, query)
 
     def atualizarResponsavel(self, responsavel: Responsavel):
         g = update_command_from_model(
@@ -47,7 +47,7 @@ class ResponsavelRepository(BaseRepository):
 
     def salvarEdicaoComissao(self, edicaoSemanaId: int, integranteComissaoId: int):
         query = f"INSERT INTO edicao_comissao VALUES ({edicaoSemanaId}, {integranteComissaoId})"
-        exec_session_sql(self.session, query)
+        exec_sql(self.connection, query)
 
     def obterComissaoByEdicao(self, edicaoSemanaId: int) -> List[Responsavel]:
         query = """SELECT * FROM responsavel r

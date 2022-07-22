@@ -16,30 +16,30 @@ class TurnoService:
         return self.repo.obterTurnosByEdicao(edicaoId)
 
     def criarTurno(self, turno: TurnoCriacaoComHorario) -> boolean:
-        with self.repo.session.begin():
-            try:
-                turnoId = self.repo.criarTurno(turno)
-                for hor in turno.horarios:
-                    hor.turno_id = turnoId.id
-                self.repo.salvarHorariosTurnos(turno.horarios)
-                self.repo.session.commit()
-                return True
-            except:
-                self.repo.session.rollback()
-                return False
+        transaction = self.repo.connection.begin()
+        try:
+            turnoId = self.repo.criarTurno(turno)
+            for hor in turno.horarios:
+                hor.turno_id = turnoId.id
+            self.repo.salvarHorariosTurnos(turno.horarios)
+            transaction.commit()
+            return True
+        except:
+            transaction.rollback()
+            return False
 
     def editarTurno(self, turno: TurnoCriacaoComHorario) -> boolean:
-        with self.repo.session.begin():
-            try:
-                self.repo.atualizarTurno(turno)
-                self.diaHorarioRepo.deletetarHorariosByTurno(turno.id)
-                for hor in turno.horarios:
-                    hor.turno_id = turno.id
-                self.repo.salvarHorariosTurnos(turno.horarios)
-                self.repo.session.commit()
-            except:
-                self.repo.session.rollback()
-                raise Exception('Não foi possível atualizar o turno')
+        transaction = self.repo.connection.begin()
+        try:
+            self.repo.atualizarTurno(turno)
+            self.diaHorarioRepo.deletetarHorariosByTurno(turno.id)
+            for hor in turno.horarios:
+                hor.turno_id = turno.id
+            self.repo.salvarHorariosTurnos(turno.horarios)
+            transaction.commit()
+        except:
+            transaction.rollback()
+            raise Exception('Não foi possível atualizar o turno')
 
     def obterTurnosComHorario(self, edicaoId: int) -> List[TurnoComHorarios]:
         returnValue: List[TurnoComHorarios] = []

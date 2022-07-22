@@ -1,7 +1,7 @@
 from sqlalchemy import true
 from app.model.coresEdicao import CoresEdicaoCreate
 from app.repository.baseRepository import BaseRepository
-from app.sql.crud import exec_session_sql, exec_sql, get_insert_query_parameter, insert_command_from_models, query_db
+from app.sql.crud import exec_sql, get_insert_query_parameter, insert_command_from_models, query_db
 
 
 class CoresEdicaoRepository(BaseRepository):

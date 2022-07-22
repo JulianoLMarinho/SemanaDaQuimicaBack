@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Tuple, Union
 
 from sqlalchemy.engine import Connection, CursorResult
 from sqlalchemy.sql import text
-from sqlalchemy.orm import sessionmaker
 from pydantic import BaseModel
 
 from app.logger import logger
@@ -132,28 +131,6 @@ def exec_sql(connection: Connection, query: str, params: dict = {}, n_retries=3,
     raise Exception
 
 
-def exec_session_sql(session: sessionmaker, query: str, params: dict = {}, n_retries=3, log=False) -> CursorResult:
-    if log:
-        log_query(query)
-        logger.info(repr(params))
-
-    query, params = expand_list_parameters(query, params)
-    query_text = text(query)
-    for i in range(n_retries + 1):
-        try:
-
-            rs = session.execute(query_text, params)
-            return rs
-        except Exception as error:
-            logger.warning(error)
-            logger.warning("Retrying in 1 second")
-            time.sleep(1)
-            if i == n_retries:
-                raise error
-            continue
-    raise Exception
-
-
 def query_db(connection: Connection, query: str, params: dict = {},
              model: Union[BaseModel, dataclass] = None, log=False, single=False):
     """Execute a query that returns rows in the database. 
@@ -164,19 +141,6 @@ def query_db(connection: Connection, query: str, params: dict = {},
     in this case, the function will return the first result or None
     """
     rs = exec_sql(connection, query, params, log=log)
-    return query_db_common(rs, model, log, single)
-
-
-def query_db_session(session: sessionmaker, query: str, params: dict = {},
-                     model: Union[BaseModel, dataclass] = None, log=False, single=False):
-    """Execute a query that returns rows in the database. 
-    Returned rows may be automatically parsed into a Pydantic model or dataclass
-    by passing a class to the model parameter.
-    It may also log the query according to the log parameter.
-    The single flag may be used if the query is expected to return a single result,
-    in this case, the function will return the first result or None
-    """
-    rs = exec_session_sql(session, query, params, log=log)
     return query_db_common(rs, model, log, single)
 
 

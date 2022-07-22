@@ -31,8 +31,8 @@ def close_connection_pools():
         _db_engine.dispose()
 
 
-def DbEngine() -> Callable[[None], Awaitable[Engine]]:
-    async def get_engine():
+def DbEngine() -> Engine:
+    def get_engine():
         assert _db_engine is not None
         return _db_engine
     return get_engine

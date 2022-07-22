@@ -15,31 +15,30 @@ class InscricaoService:
         self.atividadeRepo = atividadeRepo
 
     async def criarInscricao(self, inscricao: InscricaoAtividades, lock: asyncio.Lock):
-
         inscricaoId = 0
-        with self.repo.session.begin():
-            try:
-                await lock.acquire()
-                atividades = self.atividadeRepo.getAtividadesDetalhesByIds(
-                    inscricao.atividades)
-                erros = []
-                for atividade in atividades:
-                    if atividade.total_inscritos >= atividade.vagas:
-                        erros.append(
-                            f"A atividade {atividade.titulo} não possui mais vagas.")
-                if len(erros) > 0:
-                    self.repo.session.rollback()
-                    return erros
-                inscricaoId = self.repo.adicionarInscricao(inscricao)
-                for evento in inscricao.atividades:
-                    self.repo.adicionarAtividadeInscricao(
-                        inscricaoId.id, evento)
-                self.repo.session.commit()
-            except Exception as e:
-                self.repo.session.rollback()
-                raise e
-            finally:
-                lock.release()
+        transaction = self.repo.connection.begin()
+        try:
+            await lock.acquire()
+            atividades = self.atividadeRepo.getAtividadesDetalhesByIds(
+                inscricao.atividades)
+            erros = []
+            for atividade in atividades:
+                if atividade.total_inscritos >= atividade.vagas:
+                    erros.append(
+                        f"A atividade {atividade.titulo} não possui mais vagas.")
+            if len(erros) > 0:
+                transaction.rollback()
+                return erros
+            inscricaoId = self.repo.adicionarInscricao(inscricao)
+            for evento in inscricao.atividades:
+                self.repo.adicionarAtividadeInscricao(
+                    inscricaoId.id, evento)
+            transaction.commit()
+        except Exception as e:
+            transaction.rollback()
+            raise e
+        finally:
+            lock.release()
         return inscricaoId.id
 
     def obterAtividadesUsuario(self, usuario_id) -> List[AtividadeUsuario]:
