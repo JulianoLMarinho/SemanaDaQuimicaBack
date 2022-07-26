@@ -5,6 +5,8 @@ from fastapi import APIRouter, BackgroundTasks, Depends
 from app.dependencies import current_user_is_admin, get_current_active_user
 from app.model.atividades import Atividade
 from app.model.inscricao import AtividadeUsuario, InformarPagamento, Inscricao, InscricaoAtividades
+from app.model.tabelas import InscricoesEdicao
+from app.model.usuario import NomeEmail
 from app.services.inscricaoService import InscricaoService
 
 
@@ -74,6 +76,14 @@ def totalInscricoesPagamentoInformado(
     return service.totalInscricoesPagamentoInformado()
 
 
+@router.get("/usuarios/{atividadeId}", dependencies=[Depends(current_user_is_admin)], response_model=List[NomeEmail])
+def obterInscricoesPorAtividade(
+    atividadeId: int,
+    service: InscricaoService = Depends()
+):
+    return service.obterInscricoesPorAtividade(atividadeId)
+
+
 @router.get("/{usuarioId}", dependencies=[Depends(get_current_active_user)], response_model=List[AtividadeUsuario])
 def obterAtividadesUsuario(
     usuarioId: int,
@@ -96,3 +106,11 @@ def obterAtividade(
     service: InscricaoService = Depends()
 ):
     return service.obterAtividade(inscricaoId)
+
+
+@router.get("/inscritos/edicao/{edicaoId}", dependencies=[Depends(current_user_is_admin)], response_model=List[InscricoesEdicao])
+def obterInscricoesPorEdicao(
+    edicaoId: int,
+    service: InscricaoService = Depends()
+):
+    return service.obterInscricoesPorEdicao(edicaoId)

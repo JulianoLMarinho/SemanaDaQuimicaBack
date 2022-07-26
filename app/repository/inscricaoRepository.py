@@ -1,7 +1,8 @@
 from typing import Any, List
 from app.model.atividades import Atividade
 from app.model.inscricao import AtividadeUsuario, Inscricao, InscricaoCreate
-from app.model.usuario import Usuario
+from app.model.tabelas import InscricoesEdicao
+from app.model.usuario import NomeEmail, Usuario
 from app.repository.baseRepository import BaseRepository
 from app.sql.crud import exec_sql, exec_sql, insert_command_from_models, query_db, query_db
 
@@ -73,3 +74,25 @@ class InscricaoRepository(BaseRepository):
                     INNER JOIN inscricao I on I.usuario_id = u.id
                     WHERE I.id = :InscricaoId"""
         return query_db(self.connection, query, {"InscricaoId": inscricao_id}, single=True, model=Usuario)
+
+    def obterInscricoesPorAtividade(self, atividadeId: int) -> List[NomeEmail]:
+        query = """select u.nome, u.email, ia.atividade_id  from inscricao i 
+                    inner join inscricao_atividade ia on ia.inscricao_id = i.id 
+                    inner join usuario u on u.id = i.usuario_id 
+                    where i.status = 'PAGAMENTO_CONFIRMADO'
+                    and ia.atividade_id = :AtividadeId
+                    order by u.nome"""
+        return query_db(self.connection, query, {"AtividadeId": atividadeId}, model=NomeEmail)
+
+    def obterInscricoesPorEdicao(self, edicaoId: int) -> List[InscricoesEdicao]:
+        query = """select u.nome, u.email, u.nivel, u.curso, u.universidade, u.tamanho_camisa, u.genero, sum(1) as numero_atividades from usuario u
+                    inner join inscricao i on i.usuario_id = u.id 
+                                                and i.status = 'PAGAMENTO_CONFIRMADO' 
+                    inner join inscricao_atividade ia on ia.inscricao_id = i.id
+                    where i.edicao_semana_id = :EdicaoSemanaId
+                    group by u.nome, u.email, u.nivel, u.curso, u.universidade, u.tamanho_camisa, u.genero"""
+        param = {
+            "EdicaoSemanaId": edicaoId
+        }
+
+        return query_db(self.connection, query, param, model=InscricoesEdicao)

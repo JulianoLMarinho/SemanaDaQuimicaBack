@@ -6,6 +6,7 @@ from app.dependencies import current_user_is_admin, get_current_active_user
 from app.model.atividades import AtividadeCreate, AtividadeCreateComHorarioResponsavel, AtividadeLista, TipoAtividade, TurnoAtividade
 from app.model.certificadoUsuario import CertificadoUsuario
 from app.model.comum import OpcaoSelecao
+from app.model.tabelas import TotaisAtividades
 from app.model.usuario import Usuario
 from app.services.atividadesService import AtividadesService
 
@@ -46,7 +47,15 @@ def obterListaCertificadosUsuario(
     return service.obterListaCertificadosUsuario(usuario['id'])
 
 
-@router.get("/{idEdicao}", response_model=List[AtividadeLista])
+@router.get("/totais/{edicaoId}", dependencies=[Depends(current_user_is_admin)], response_model=List[TotaisAtividades])
+def obterTotaisAtividades(
+    edicaoId: int,
+    service: AtividadesService = Depends()
+):
+    return service.obterTotaisAtividades(edicaoId)
+
+
+@ router.get("/{idEdicao}", response_model=List[AtividadeLista])
 def getAtividadesByEdicao(
     idEdicao: int,
     service: AtividadesService = Depends()
@@ -54,7 +63,7 @@ def getAtividadesByEdicao(
     return service.getAtividadesDetalhesByEdicao(idEdicao)
 
 
-@router.get("/{idEdicao}/{tipoAtividade}", response_model=List[AtividadeLista])
+@ router.get("/{idEdicao}/{tipoAtividade}", response_model=List[AtividadeLista])
 def getAtividadesByEdicaoAndTipo(
     idEdicao: int,
     tipoAtividade: str,
@@ -63,7 +72,7 @@ def getAtividadesByEdicaoAndTipo(
     return service.getAtividadesDetalhesByEdicaoAndTipo(idEdicao, [tipoAtividade])
 
 
-@router.get("/turno/{idEdicao}/{tipoAtividade}", response_model=List[TurnoAtividade])
+@ router.get("/turno/{idEdicao}/{tipoAtividade}", response_model=List[TurnoAtividade])
 def getAtividadesByEdicaoAndTipo(
     idEdicao: int,
     tipoAtividade: str,
@@ -72,7 +81,7 @@ def getAtividadesByEdicaoAndTipo(
     return service.getAtividadesDetalhesByEdicaoTurnoAndTipo(idEdicao, tipoAtividade)
 
 
-@router.put("", response_model=Boolean, dependencies=[Depends(current_user_is_admin)])
+@ router.put("", response_model=Boolean, dependencies=[Depends(current_user_is_admin)])
 def criarAtividade(
     atividade: AtividadeCreateComHorarioResponsavel,
     service: AtividadesService = Depends()
@@ -83,7 +92,7 @@ def criarAtividade(
         return service.criarAtividade(atividade)
 
 
-@router.post("", dependencies=[Depends(current_user_is_admin)])
+@ router.post("", dependencies=[Depends(current_user_is_admin)])
 def atualizarAtividade(
     atividade: AtividadeCreateComHorarioResponsavel,
     service: AtividadesService = Depends()

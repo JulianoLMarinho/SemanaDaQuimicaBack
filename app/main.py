@@ -4,8 +4,6 @@ from pydantic import BaseModel
 from typing import Optional
 from app.model.authRequestBody import AuthRequestBody
 from app.route_setup import bind_routers
-from app.routers import userController, carrouselInicioController, edicaoSemanaController, atividadesController
-import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Depends
 from app.services.authorizationService import AuthorizationService

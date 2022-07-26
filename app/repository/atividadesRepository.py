@@ -2,6 +2,7 @@ from typing import Any, List
 from app.model.atividades import Atividade, AtividadeCreate, AtividadeLista, AtividadeORM, DiaHoraAtividade, ResponsavelAtividade, TipoAtividade
 from app.model.certificadoUsuario import CertificadoUsuario
 from app.model.comum import OpcaoSelecao
+from app.model.tabelas import TotaisAtividades
 from app.model.usuarioModel import Usuario
 from app.repository.baseRepository import BaseRepository
 from app.sql.crud import columns, columnsList, exec_sql, insert_command_from_models, query_db, update_command_from_model
@@ -170,3 +171,38 @@ class AtividadesRepository(BaseRepository):
                 ) c"""
 
         return query_db(self.connection, query, {'UsuarioId': usuarioId}, model=CertificadoUsuario)
+
+    def obterTotaisAtividades(self, edicaoId: int) -> List[TotaisAtividades]:
+        query = """
+            select a.titulo, a.vagas as vagas, a.vagas - sum(case 
+                when i.status = 'PAGAMENTO_CONFIRMADO' then 1
+                else 0
+            end) as vagas_restantes,
+            sum(case 
+                when i.status = 'PAGAMENTO_CONFIRMADO' then 1
+                else 0
+            end) as inscricoes_confirmadas,
+            sum(case 
+                when i.status = 'CANCELADA' then 1
+                else 0
+            end) as inscricoes_canceladas,
+            sum(case 
+                when i.status = 'AGUARDANDO_PAGAMENTO' then 1
+                else 0
+            end) as inscricoes_aguardando_pagamento,
+            sum(case 
+                when i.status = 'PAGAMENTO_INFORMADO' then 1
+                else 0
+            end) as inscricoes_pagamento_informado
+            from atividade a 
+            inner join inscricao_atividade ia on ia.atividade_id = a.id 
+            inner join inscricao i on ia.inscricao_id = i.id 
+            where i.edicao_semana_id = :EdicaoSemanaId
+            group by a.titulo, a.vagas
+        """
+
+        param = {
+            "EdicaoSemanaId": edicaoId
+        }
+
+        return query_db(self.connection, query, param, model=TotaisAtividades)

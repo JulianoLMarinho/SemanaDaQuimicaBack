@@ -42,3 +42,8 @@ class Usuario(BaseModel):
         for field in self.__fields__:
             params[field] = attr[field]
         return (query, attr)
+
+
+class NomeEmail(BaseModel):
+    nome: str
+    email: str

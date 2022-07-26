@@ -3,6 +3,8 @@ from typing import List
 from fastapi import Depends
 from app.model.atividades import Atividade
 from app.model.inscricao import AtividadeUsuario, Inscricao, InscricaoAtividades
+from app.model.tabelas import InscricoesEdicao
+from app.model.usuario import NomeEmail
 from app.repository.atividadesRepository import AtividadesRepository
 from app.repository.inscricaoRepository import InscricaoRepository
 from app.services.emailService import EmailService
@@ -99,3 +101,9 @@ class InscricaoService:
         mensagem += "<p>Se você acha que isto foi um engano, entre em contato com a Comissão Organizadora da Semana da Química.</p>"
         self.email.sendEmail("Cancelamento de Inscrição",
                              mensagem, usuario.email)
+
+    def obterInscricoesPorAtividade(self, atividadeId: int) -> List[NomeEmail]:
+        return self.repo.obterInscricoesPorAtividade(atividadeId)
+
+    def obterInscricoesPorEdicao(self, edicaoId: int) -> List[InscricoesEdicao]:
+        return self.repo.obterInscricoesPorEdicao(edicaoId)
