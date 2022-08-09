@@ -13,6 +13,8 @@ class EdicaoSemanaService:
 
     def getEdicaoAtiva(self) -> EdicaoSemanaComComissao:
         edicao = self.repo.getEdicaoAtiva()
+        if edicao is None:
+            return edicao
         edicao.comissao_edicao = self.responsavelService.obterComissaoByEdicao(
             edicao.id)
         return edicao

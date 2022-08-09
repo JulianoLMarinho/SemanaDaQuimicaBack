@@ -2,13 +2,14 @@
 from typing import AsyncIterable, Callable
 from sqlalchemy.engine import Connection
 from fastapi.params import Depends
-from app.sql.database import DbEngine, logger
+from app.sql.database import engine, logger
 from sqlalchemy.orm.session import Session
 from time import time
 
 
 def UseConnection() -> Connection:
-    def CustomConnection(db_engine=Depends(DbEngine())) -> Connection:
+
+    def CustomConnection(db_engine=Depends(engine.DbEngine())) -> Connection:
         session = Session(bind=db_engine, autocommit=True)
         start_time = time()
         try:

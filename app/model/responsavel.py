@@ -11,7 +11,7 @@ class ResponsavelCreate(BaseModel):
     twitter: Optional[str]
     instagram: Optional[str]
     facebook: Optional[str]
-    tipo: str
+    tipo: str = 'responsavel'
     funcao_semana: Optional[str]
 
 

@@ -96,3 +96,9 @@ class InscricaoRepository(BaseRepository):
         }
 
         return query_db(self.connection, query, param, model=InscricoesEdicao)
+
+    def obterInscricoesAguardandoPagamento3Dias(self) -> List[Inscricao]:
+        query = """select * from inscricao i 
+                    where status = 'AGUARDANDO_PAGAMENTO'
+                    and now()::date - data_criacao::date >= 3"""
+        return query_db(self.connection, query, model=Inscricao)

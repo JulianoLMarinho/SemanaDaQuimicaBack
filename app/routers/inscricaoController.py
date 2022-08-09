@@ -7,7 +7,20 @@ from app.model.atividades import Atividade
 from app.model.inscricao import AtividadeUsuario, InformarPagamento, Inscricao, InscricaoAtividades
 from app.model.tabelas import InscricoesEdicao
 from app.model.usuario import NomeEmail
+from app.repository.atividadesRepository import AtividadesRepository
+from app.repository.coresEdicaoRepository import CoresEdicaoRepository
+from app.repository.edicaoSemanaRepository import EdicaoSemanaRepository
+from app.repository.inscricaoRepository import InscricaoRepository
+from app.repository.responsavelRepository import ResponsavelRepository
+from app.services.coresEdicaoService import CoresEdicaoService
+from app.services.edicaoSemanaService import EdicaoSemanaService
+from app.services.emailService import EmailService
 from app.services.inscricaoService import InscricaoService
+from fastapi_utils.tasks import repeat_every
+from app.services.responsavelService import ResponsavelService
+from app.sql.connections import MainConnection
+
+from app.sql.database import engine
 
 
 router = APIRouter()
@@ -114,3 +127,19 @@ def obterInscricoesPorEdicao(
     service: InscricaoService = Depends()
 ):
     return service.obterInscricoesPorEdicao(edicaoId)
+
+
+@router.on_event("startup")
+@repeat_every(seconds=60*60)
+def cancelarInscricoesPendentesPagamento():
+    conn = MainConnection(db_engine=engine.DbEngine()())
+    service = InscricaoService(
+        repo=InscricaoRepository(conn),
+        atividadeRepo=AtividadesRepository(conn),
+        emailService=EmailService(edicaoSemanaService=EdicaoSemanaService(repository=EdicaoSemanaRepository(
+            conn), responsavelService=ResponsavelService(ResponsavelRepository(conn))), coresEdicaoService=CoresEdicaoService(CoresEdicaoRepository(conn)))
+    )
+    inscricoes = service.obterInscricoesAguardandoPagamento3Dias()
+    for inscricao in inscricoes:
+        service.cancelarInscricao(inscricao.id)
+        service.enviarEmailCancelamentoInscricao(inscricao.id)

@@ -107,3 +107,6 @@ class InscricaoService:
 
     def obterInscricoesPorEdicao(self, edicaoId: int) -> List[InscricoesEdicao]:
         return self.repo.obterInscricoesPorEdicao(edicaoId)
+
+    def obterInscricoesAguardandoPagamento3Dias(self) -> List[Inscricao]:
+        return self.repo.obterInscricoesAguardandoPagamento3Dias()
