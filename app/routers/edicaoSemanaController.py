@@ -9,7 +9,7 @@ from app.services.edicaoSemanaService import EdicaoSemanaService
 
 
 router = APIRouter()
-prefix = '/edicaoSemana'
+prefix = '/edicaosemana'
 tags = ['Edição Semana']
 
 
