@@ -5,7 +5,7 @@ from jose import jwt
 
 def decode(idToken):
 
-    target_audience = "ambient-future-298121"
+    target_audience = "semana-da-quimica-ufrj"
 
     certificate_url = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com'
 
