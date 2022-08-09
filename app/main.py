@@ -33,7 +33,8 @@ origins = [
     "http://localhost:4200",
     "https://localhost:4200",
     "http://julianomarinho.provisorio.ws",
-    "https://greattestapp.azurewebsites.net"
+    "https://teste.semanadaquimicaufrj.com.br",
+    "https://semanadaquimicaufrj.com.br"
 ]
 
 app.add_middleware(
