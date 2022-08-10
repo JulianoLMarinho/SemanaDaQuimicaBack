@@ -26,10 +26,10 @@ class DBEngine:
         db_table = urllib.parse.quote(os.getenv("DB_DATATABLE"))
         connString = f'postgresql+psycopg2://{user}:{password}@{db_url}/{db_table}'
         self._db_engine = create_engine(connString,
-                                        max_overflow=20,
-                                        pool_size=30,
-                                        pool_recycle=300,
-                                        pool_timeout=300)
+                                        max_overflow=10,
+                                        pool_size=15,
+                                        pool_recycle=30,
+                                        pool_timeout=0)
 
     def close_connection_pools(self):
         logger.info("Disposing connection pools.")
