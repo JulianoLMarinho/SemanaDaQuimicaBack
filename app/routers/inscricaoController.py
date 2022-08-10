@@ -129,10 +129,8 @@ def obterInscricoesPorEdicao(
     return service.obterInscricoesPorEdicao(edicaoId)
 
 
-@router.on_event("startup")
-@repeat_every(seconds=60*60)
 async def cancelarInscricoesPendentesPagamento():
-    conn = MainConnection(db_engine=await dbEngine.DbEngine())
+    conn = MainConnection()
     service = InscricaoService(
         repo=InscricaoRepository(conn),
         atividadeRepo=AtividadesRepository(conn),

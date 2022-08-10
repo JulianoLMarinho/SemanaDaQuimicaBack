@@ -9,17 +9,16 @@ from time import time
 
 def UseConnection() -> Callable[..., AsyncIterable[Connection]]:
 
-    async def CustomConnection(db_engine=Depends(dbEngine.DbEngine())) -> AsyncIterable[Connection]:
-        session = dbEngine.get_session()
-        conn = session.connection()
-        start_time = time()
+    async def CustomConnection() -> AsyncIterable[Connection]:
+        #start_time = time()
+        conn = dbEngine._db_engine.connect()
         try:
             yield conn
         finally:
-            elapsed_time = time() - start_time
-            logger.info(
-                f"Connection leased for {elapsed_time} seconds.")
             conn.close()
+            #elapsed_time = time() - start_time
+            # logger.info(
+            # f"Connection leased for {elapsed_time} seconds.")
     return CustomConnection
 
 
