@@ -20,7 +20,7 @@ from fastapi_utils.tasks import repeat_every
 from app.services.responsavelService import ResponsavelService
 from app.sql.connections import MainConnection
 
-from app.sql.database import engine
+from app.sql.database import dbEngine
 
 
 router = APIRouter()
@@ -131,8 +131,8 @@ def obterInscricoesPorEdicao(
 
 @router.on_event("startup")
 @repeat_every(seconds=60*60)
-def cancelarInscricoesPendentesPagamento():
-    conn = MainConnection(db_engine=engine.DbEngine()())
+async def cancelarInscricoesPendentesPagamento():
+    conn = MainConnection(db_engine=await dbEngine.DbEngine())
     service = InscricaoService(
         repo=InscricaoRepository(conn),
         atividadeRepo=AtividadesRepository(conn),

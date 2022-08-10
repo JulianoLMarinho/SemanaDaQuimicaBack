@@ -2,24 +2,25 @@
 from typing import AsyncIterable, Callable
 from sqlalchemy.engine import Connection
 from fastapi.params import Depends
-from app.sql.database import engine, logger
+from app.sql.database import dbEngine, logger
 from sqlalchemy.orm.session import Session
 from time import time
 
 
-def UseConnection() -> Connection:
+def UseConnection() -> Callable[..., AsyncIterable[Connection]]:
 
-    def CustomConnection(db_engine=Depends(engine.DbEngine())) -> Connection:
-        session = Session(bind=db_engine, autocommit=True)
+    async def CustomConnection(db_engine=Depends(dbEngine.DbEngine())) -> AsyncIterable[Connection]:
+        session = dbEngine.get_session()
+        conn = session.connection()
         start_time = time()
         try:
-            return session.connection()
+            yield conn
         finally:
             elapsed_time = time() - start_time
             logger.info(
                 f"Connection leased for {elapsed_time} seconds.")
-            session.close()
+            conn.close()
     return CustomConnection
 
 
-MainConnection: Connection = UseConnection()
+MainConnection: Callable[..., AsyncIterable[Connection]] = UseConnection()

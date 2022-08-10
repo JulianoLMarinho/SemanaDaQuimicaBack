@@ -7,7 +7,7 @@ from app.route_setup import bind_routers
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Depends
 from app.services.authorizationService import AuthorizationService
-from app.sql.database import engine
+from app.sql.database import dbEngine
 
 
 class ModelName(str, Enum):
@@ -24,8 +24,8 @@ class Item(BaseModel):
 
 
 app = FastAPI(
-    on_startup=[engine.open_connection_pools],
-    on_shutdown=[engine.close_connection_pools]
+    on_startup=[dbEngine.open_connection_pools],
+    on_shutdown=[dbEngine.close_connection_pools]
 )
 
 
