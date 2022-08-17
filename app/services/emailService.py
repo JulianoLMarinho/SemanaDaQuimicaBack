@@ -26,10 +26,11 @@ class EmailService:
         edicaoSemana = self.semanaService.getEdicaoAtiva()
         cores = self.corService.obterCoresEdicao(edicaoSemana.id)
         logo = edicaoSemana.logo_completa
-        logoByte = base64.b64decode(logo.split('base64,')[1])
+        if logo is not None:
+            logoByte = base64.b64decode(logo.split('base64,')[1])
 
-        logoSemana = MIMEImage(logoByte)
-        logoSemana.add_header("Content-ID", "<logoSemana>")
+            logoSemana = MIMEImage(logoByte)
+            logoSemana.add_header("Content-ID", "<logoSemana>")
 
         message = MIMEMultipart("alternative")
 
@@ -94,7 +95,8 @@ class EmailService:
                 """
 
         message.attach(MIMEText(html, 'html'))
-        message.attach(logoSemana)
+        if logo is not None:
+            message.attach(logoSemana)
 
         with smtplib.SMTP(self.server, self.port) as server:
             server.login(self.email, self.password)

@@ -44,16 +44,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-"""
-app.include_router(userController.router, prefix='/usuario', tags=['Usuários'])
-app.include_router(carrouselInicioController.router,
-                   prefix='/carrousel', tags=["Início"])
-app.include_router(edicaoSemanaController.router,
-                   prefix='/edicaoSemana', tags=['Edição Semana'])
-app.include_router(atividadesController.router,
-                   prefix='/atividades', tags=['Atividades'])
-"""
-
 bind_routers(app)
 
 

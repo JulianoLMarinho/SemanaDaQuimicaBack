@@ -92,9 +92,18 @@ def criarAtividade(
         return service.criarAtividade(atividade)
 
 
-@ router.post("", dependencies=[Depends(current_user_is_admin)])
+@router.post("", dependencies=[Depends(current_user_is_admin)])
 def atualizarAtividade(
     atividade: AtividadeCreateComHorarioResponsavel,
     service: AtividadesService = Depends()
 ):
     service.atualizarAtividade(atividade)
+
+
+@router.delete("/{atividadeId}", dependencies=[Depends(current_user_is_admin)])
+def deletarAtividade(
+    atividadeId: int,
+    service: AtividadesService = Depends()
+):
+    service.deletarAtividade(atividadeId)
+    return True

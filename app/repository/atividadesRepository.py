@@ -206,3 +206,10 @@ class AtividadesRepository(BaseRepository):
         }
 
         return query_db(self.connection, query, param, model=TotaisAtividades)
+
+    def deletarAtividade(self, atividadeId):
+        query = "DELETE FROM atividade WHERE id = :AtividadeId"
+        param = {
+            "AtividadeId": atividadeId
+        }
+        exec_sql(self.connection, query, param)

@@ -143,3 +143,6 @@ class AtividadesService():
 
     def obterTotaisAtividades(self, edicaoId: int) -> List[TotaisAtividades]:
         return self.repo.obterTotaisAtividades(edicaoId)
+
+    def deletarAtividade(self, atividadeId):
+        self.repo.deletarAtividade(atividadeId)
