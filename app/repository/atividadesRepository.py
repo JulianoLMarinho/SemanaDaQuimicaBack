@@ -1,5 +1,6 @@
 from typing import Any, List
 from app.model.atividades import Atividade, AtividadeCreate, AtividadeLista, AtividadeORM, DiaHoraAtividade, ResponsavelAtividade, TipoAtividade
+from app.model.aviso import Aviso
 from app.model.certificadoUsuario import CertificadoUsuario
 from app.model.comum import OpcaoSelecao
 from app.model.tabelas import TotaisAtividades

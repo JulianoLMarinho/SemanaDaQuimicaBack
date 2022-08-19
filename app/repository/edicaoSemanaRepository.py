@@ -1,5 +1,6 @@
 from typing import List
 from sqlalchemy import true
+from app.model.aviso import Aviso, AvisoCreate, AvisoNotificacao, FiltroAviso
 from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaCreate
 from app.repository.baseRepository import BaseRepository
 from app.sql.crud import exec_sql, exec_sql, insert_command_from_models, query_db, query_db, update_command_from_model
@@ -107,3 +108,33 @@ class EdicaoSemanaRepository(BaseRepository):
             "EdicaoSemanaId": edicaoSemanaId
         }
         exec_sql(self.connection, query, params)
+
+    def criarAviso(self, aviso: AvisoCreate):
+        columnsTable = AvisoCreate.construct().__fields__
+        query = insert_command_from_models(
+            'aviso', columnsTable, [aviso])
+        exec_sql(self.connection, query[0], query[1])
+
+    def obterAvisosEdicao(self, semanaId: int) -> List[AvisoNotificacao]:
+        query = "SELECT * FROM aviso WHERE edicao_semana_id = :EdicaoID ORDER BY data_criacao DESC"
+        param = {
+            'EdicaoID': semanaId
+        }
+        return query_db(self.connection, query, param, model=AvisoNotificacao)
+
+    def updateAvisoEdicao(self, aviso: Aviso):
+        query = update_command_from_model(
+            'aviso', Aviso.construct().__fields__) + """ WHERE id = :id"""
+        exec_sql(self.connection, query, aviso.dict())
+
+    def obterAvisosPorData(self, filtro: FiltroAviso) -> List[AvisoNotificacao]:
+        query = "SELECT * FROM aviso WHERE edicao_semana_id = :edicao_semana_id AND data_criacao > :data_criacao ORDER BY data_criacao DESC"
+        param = filtro.dict()
+        return query_db(self.connection, query, param, model=AvisoNotificacao)
+
+    def deletarAviso(self, avisoId: int):
+        query = "DELETE FROM aviso WHERE id = :AvisoId"
+        param = {
+            "AvisoId": avisoId
+        }
+        exec_sql(self.connection, query, param)

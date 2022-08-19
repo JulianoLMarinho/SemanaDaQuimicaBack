@@ -3,6 +3,7 @@ from typing import Any, List
 from fastapi import APIRouter, Depends, Request
 from sse_starlette import EventSourceResponse
 from app.dependencies import current_user_is_admin, get_current_active_user
+from ..model.aviso import Aviso, AvisoCreate, AvisoNotificacao, FiltroAviso
 
 from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds, QuemSomos
 from app.services.edicaoSemanaService import EdicaoSemanaService
@@ -49,6 +50,24 @@ def adicionarCarrousselImage(
     service: EdicaoSemanaService = Depends()
 ):
     service.adicionarCarrousselImage(carrousselImage)
+
+
+@router.post("/aviso", dependencies=[Depends(current_user_is_admin)])
+def criarAviso(
+    aviso: Aviso,
+    service: EdicaoSemanaService = Depends()
+):
+    service.criarAviso(aviso)
+    return True
+
+
+@router.put("/aviso")
+def atualizarAviso(
+    aviso: Aviso,
+    service: EdicaoSemanaService = Depends()
+):
+    service.updateAvisoEdicao(aviso)
+    return True
 
 
 @router.get("/stream-results")
@@ -151,6 +170,14 @@ def salvarLogo(
     service.salvarAssinaturaPresidente(assinatura)
 
 
+@router.post("/avisos/obter-data")
+def obterAvisosPorData(
+    filtro: FiltroAviso,
+    service: EdicaoSemanaService = Depends()
+):
+    return service.obterAvisosPorData(filtro)
+
+
 @router.put("/site-em-construcao/{edicaoSemanaId}/{siteEmContrucao}", dependencies=[Depends(current_user_is_admin)])
 def aceitarInscricoesAtividades(
     edicaoSemanaId: int,
@@ -158,3 +185,20 @@ def aceitarInscricoesAtividades(
     service: EdicaoSemanaService = Depends()
 ):
     service.ativarSiteEmConstrucao(edicaoSemanaId, siteEmContrucao)
+
+
+@router.get("/avisos/{edicaoId}", response_model=List[AvisoNotificacao])
+def obterAvisosEdicao(
+    edicaoId: int,
+    service: EdicaoSemanaService = Depends()
+):
+    return service.obterAvisosEdicao(edicaoId)
+
+
+@router.delete("/avisos/{avisoId}", dependencies=[Depends(current_user_is_admin)])
+def deletarAviso(
+    avisoId: int,
+    service: EdicaoSemanaService = Depends()
+):
+    service.deletarAviso(avisoId)
+    return True

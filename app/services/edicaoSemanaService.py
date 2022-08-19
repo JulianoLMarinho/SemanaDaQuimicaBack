@@ -1,5 +1,6 @@
 from typing import List
 from fastapi import Depends
+from app.model.aviso import Aviso, AvisoCreate, AvisoNotificacao, FiltroAviso
 from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds, EdicaoSemanaCreate
 
 from app.repository.edicaoSemanaRepository import EdicaoSemanaRepository
@@ -81,3 +82,18 @@ class EdicaoSemanaService:
 
     def salvarQuemSomos(self, quemSomosTexto: str, edicaoSemanaId: int):
         self.repo.salvarQuemSomos(quemSomosTexto, edicaoSemanaId)
+
+    def criarAviso(self, aviso: AvisoCreate):
+        self.repo.criarAviso(aviso)
+
+    def obterAvisosEdicao(self, semanaId: int) -> List[AvisoNotificacao]:
+        return self.repo.obterAvisosEdicao(semanaId)
+
+    def updateAvisoEdicao(self, aviso: Aviso):
+        self.repo.updateAvisoEdicao(aviso)
+
+    def obterAvisosPorData(self, filtro: FiltroAviso) -> List[AvisoNotificacao]:
+        return self.repo.obterAvisosPorData(filtro)
+
+    def deletarAviso(self, avisoId: int):
+        self.repo.deletarAviso(avisoId)

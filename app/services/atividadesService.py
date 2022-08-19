@@ -3,6 +3,7 @@ from xmlrpc.client import Boolean, boolean
 
 from fastapi import Depends
 from app.model.atividades import Atividade, AtividadeCreate, AtividadeCreateComHorarioResponsavel, AtividadeLista, TipoAtividade, TurnoAtividade
+from app.model.aviso import Aviso
 from app.model.certificadoUsuario import CertificadoUsuario
 from app.model.comum import OpcaoSelecao
 from app.model.tabelas import TotaisAtividades
