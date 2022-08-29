@@ -38,6 +38,10 @@ class AuthorizationService:
             user.permissoes = []
             user.url_foto_perfil = idinfo['picture'] if 'picture' in idinfo else None
             self.userService.addUser(user)
+            user = self.userService.getUserByEmailAndGoogleUser(
+                userEmail, userGoogleId)
+            user.permissoes = self.userService.getPermissaoUsuario(
+                user.id)
             key = os.getenv("JWT_KEY")
             payloadUser = user.dict()
             payloadUser['sub'] = user.email
