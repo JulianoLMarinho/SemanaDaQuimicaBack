@@ -24,7 +24,7 @@ class InscricaoRepository(BaseRepository):
         exec_sql(self.connection, query, params)
 
     def obterAtividadesUsuario(self, usuario_id) -> List[AtividadeUsuario]:
-        query = """SELECT ia.atividade_id, i.status, ia.inscricao_id FROM inscricao_atividade ia
+        query = """SELECT ia.atividade_id, i.status, ia.inscricao_id, i.camisa_kit, i.cotista_sbq FROM inscricao_atividade ia
                     INNER JOIN inscricao i ON i.id = ia.inscricao_id
                     WHERE i.usuario_id = :UsuarioId 
                     AND i.status <> 'CANCELADA'"""

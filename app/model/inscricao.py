@@ -7,6 +7,8 @@ class InscricaoCreate(BaseModel):
     status: str
     usuario_id: int
     valor: float
+    camisa_kit: bool
+    cotista_sbq: bool
 
 
 class Inscricao(InscricaoCreate):
@@ -27,3 +29,5 @@ class AtividadeUsuario(BaseModel):
     atividade_id: int
     inscricao_id: int
     status: str
+    camisa_kit: bool
+    cotista_sbq: bool
