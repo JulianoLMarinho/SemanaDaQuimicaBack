@@ -75,7 +75,7 @@ class InscricaoService:
         for atividade in atividades:
             mensagem += "<span style='margin-left: 20px'><b>" + \
                 atividade.titulo + "</b></span><br>"
-        mensagem += "foi cadastrata e está aguardando o pagamento.</p>"
+        mensagem += "foi cadastrata e está aguardando o pagamento. <br> Você tem até 3 dias para efetuar o pagamento, caso contrário a sua inscrição será automaticamente cancelada.</p>"
         self.email.sendEmail("Confirmação de Inscrição",
                              mensagem, usuarioEmail)
 
@@ -100,6 +100,18 @@ class InscricaoService:
         mensagem += "foi cancelada.</p>"
         mensagem += "<p>Se você acha que isto foi um engano, entre em contato com a Comissão Organizadora da Semana da Química.</p>"
         self.email.sendEmail("Cancelamento de Inscrição",
+                             mensagem, usuario.email)
+
+    def enviarEmailCancelamentoInscricao3Dias(self, inscricaoId: int):
+        atividades = self.obterAtividade(inscricaoId)
+        usuario = self.repo.obterUsuarioPorInscricao(inscricaoId)
+        mensagem = f"<p>A sua inscrição com identificação {inscricaoId} na(s) atividade(s):<br>"
+        for atividade in atividades:
+            mensagem += "<span style='margin-left: 20px'><b>" + \
+                atividade.titulo + "</b></span><br>"
+        mensagem += "foi cancelada. O cancelamento ocorreu pois o prazo de 3 dias para informar o pagamento da sua inscrição foi esgotado.</p>"
+        mensagem += "<p>Se você acha que isto foi um engano, entre em contato com a Comissão Organizadora da Semana da Química.</p>"
+        self.email.sendEmail("Cancelamento de Inscrição Por Falta de Pagamento",
                              mensagem, usuario.email)
 
     def obterInscricoesPorAtividade(self, atividadeId: int) -> List[NomeEmail]:

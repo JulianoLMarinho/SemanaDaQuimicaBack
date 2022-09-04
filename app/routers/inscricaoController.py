@@ -129,8 +129,10 @@ def obterInscricoesPorEdicao(
     return service.obterInscricoesPorEdicao(edicaoId)
 
 
+@router.on_event("startup")
+@repeat_every(seconds=60 * 60)
 async def cancelarInscricoesPendentesPagamento():
-    conn = MainConnection()
+    conn = dbEngine._db_engine.connect()
     service = InscricaoService(
         repo=InscricaoRepository(conn),
         atividadeRepo=AtividadesRepository(conn),
@@ -140,4 +142,5 @@ async def cancelarInscricoesPendentesPagamento():
     inscricoes = service.obterInscricoesAguardandoPagamento3Dias()
     for inscricao in inscricoes:
         service.cancelarInscricao(inscricao.id)
-        service.enviarEmailCancelamentoInscricao(inscricao.id)
+        service.enviarEmailCancelamentoInscricao3Dias(inscricao.id)
+    conn.close()
