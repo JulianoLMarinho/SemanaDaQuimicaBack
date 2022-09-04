@@ -14,6 +14,8 @@ class InscricaoCreate(BaseModel):
 class Inscricao(InscricaoCreate):
     id: Optional[int]
     numero_comprovante: Optional[str]
+    nome: Optional[str]
+    email: Optional[str]
 
 
 class InscricaoAtividades(Inscricao):

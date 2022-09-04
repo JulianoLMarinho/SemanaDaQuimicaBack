@@ -35,7 +35,9 @@ class InscricaoRepository(BaseRepository):
         return query_db(self.connection, query, {'UsuarioId': usuario_id}, model=Inscricao)
 
     def obterInscricoesConfirmacao(self) -> List[Inscricao]:
-        query = """SELECT * FROM inscricao WHERE status = 'PAGAMENTO_INFORMADO' ORDER BY data_criacao DESC"""
+        query = """SELECT i.*, u.nome, u.email  FROM inscricao i 
+                    inner join usuario u on u.id = i.usuario_id 
+                    WHERE status = 'PAGAMENTO_INFORMADO' ORDER BY data_criacao DESC"""
         return query_db(self.connection, query, model=Inscricao)
 
     def obterAtividade(self, inscricao_id) -> List[Atividade]:
