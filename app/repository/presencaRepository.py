@@ -10,7 +10,8 @@ class PresencaRepository(BaseRepository):
                     INNER JOIN usuario u on i.usuario_id = u.id
                     LEFT JOIN presenca p on ia.id = p.inscricao_atividade_id
                     WHERE ia.atividade_id = :AtividadeId
-                    AND i.status = 'PAGAMENTO_CONFIRMADO'"""
+                    AND i.status = 'PAGAMENTO_CONFIRMADO'
+                    ORDER BY u.nome"""
         params = {
             "AtividadeId": atividade_id
         }
