@@ -13,10 +13,10 @@ class PresencaService():
         presencas = self.repo.getAlunosPresenca(atividade_id)
         returnListObject = {}
         for presenca in presencas:
-            if presenca.inscricao_atividade_id not in returnListObject.keys():
+            if presenca.id not in returnListObject.keys():
 
-                returnListObject[presenca.inscricao_atividade_id] = AlunoPresenca(id=presenca.id,
-                                                                                  nome=presenca.nome, atividade_id=presenca.atividade_id, presencas=[])
+                returnListObject[presenca.id] = AlunoPresenca(id=presenca.id,
+                                                              nome=presenca.nome, atividade_id=presenca.atividade_id, presencas=[])
             if presenca.inscricao_atividade_id is not None:
                 obj = returnListObject.get(presenca.inscricao_atividade_id)
                 obj.presencas.append(Presenca(inscricao_atividade_id=presenca.inscricao_atividade_id,
