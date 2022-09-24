@@ -122,3 +122,9 @@ class InscricaoService:
 
     def obterInscricoesAguardandoPagamento3Dias(self) -> List[Inscricao]:
         return self.repo.obterInscricoesAguardandoPagamento3Dias()
+
+    def obterAlunosPrimeiroCurso(self, edicao_id: int):
+        return self.repo.obterAlunosPrimeiroCurso(edicao_id)
+
+    def tamanhoCamisaUsuarioInscrito(self, edicao_id: int):
+        return self.repo.tamanhoCamisaUsuarioInscrito(edicao_id)

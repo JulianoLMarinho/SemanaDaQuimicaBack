@@ -129,6 +129,22 @@ def obterInscricoesPorEdicao(
     return service.obterInscricoesPorEdicao(edicaoId)
 
 
+@router.get("/primeiro-curso/{EdicaoId}", dependencies=[Depends(current_user_is_admin)])
+def obterAlunosPrimeiroCurso(
+    EdicaoId: int,
+    service: InscricaoService = Depends()
+):
+    return service.obterAlunosPrimeiroCurso(EdicaoId)
+
+
+@router.get("/tamanho-camisas/{EdicaoId}", dependencies=[Depends(current_user_is_admin)])
+def tamanhoCamisaUsuarioInscrito(
+    EdicaoId: int,
+    service: InscricaoService = Depends()
+):
+    return service.tamanhoCamisaUsuarioInscrito(EdicaoId)
+
+
 @router.on_event("startup")
 @repeat_every(seconds=60 * 60)
 async def cancelarInscricoesPendentesPagamento():

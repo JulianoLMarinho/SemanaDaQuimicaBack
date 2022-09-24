@@ -104,3 +104,16 @@ class InscricaoRepository(BaseRepository):
                     where status = 'AGUARDANDO_PAGAMENTO'
                     and now()::date - data_criacao::date >= 3"""
         return query_db(self.connection, query, model=Inscricao)
+
+    def obterAlunosPrimeiroCurso(self, edicao_id: int):
+        query = """select aluno, curso, dia, horario from vw_primeiro_curso_usuario where edicao_semana_id = :EdicaoID"""
+        return query_db(self.connection, query, {"EdicaoID": edicao_id})
+
+    def tamanhoCamisaUsuarioInscrito(self, edicao_id: int):
+        query = """
+            select u.nome as Nome, u.tamanho_camisa as Tamanho from usuario u
+            inner join inscricao i on i.usuario_id = u.id and i.camisa_kit = true and i.status = 'PAGAMENTO_CONFIRMADO'
+            where i.edicao_semana_id = :EdicaoID
+            order by u.nome
+        """
+        return query_db(self.connection, query, {"EdicaoID": edicao_id})
