@@ -18,6 +18,7 @@ class CoresEdicaoRepository(BaseRepository):
                     cor5 = :cor5, 
                     cor6 = :cor6;"""
         exec_sql(self.connection, test, coresEdicao.dict())
+        self.upsertUltimasAlteracoes('cores_edicao')
 
     def obterCoresEdicao(self, edicaoId: int) -> CoresEdicaoCreate:
         query = "SELECT * FROM cores_edicao WHERE edicao_semana_id = :EdicaoId"

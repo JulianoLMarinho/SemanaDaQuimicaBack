@@ -23,6 +23,7 @@ class TurnosRepository(BaseRepository):
         query = insert_command_from_models(
             'dia_hora_atividade', columnsTable, horarios)
         exec_sql(self.connection, query[0], query[1])
+        self.upsertUltimasAlteracoes('dia_hora_atividade')
 
     def obterTurnosSelecaoByEdicao(self, edicaoId: int) -> List[OpcaoSelecao]:
         query = """SELECT id as value, nome_turno as name FROM turno WHERE edicao_semana_id = :EdicaoSemanaId"""
@@ -31,6 +32,7 @@ class TurnosRepository(BaseRepository):
     def deletarTurnosByAtividade(self, atividadeId):
         query = f"""DELETE FROM atividade_turno WHERE atividade_id = {atividadeId}"""
         exec_sql(self.connection, query)
+        self.upsertUltimasAlteracoes('dia_hora_atividade')
 
     def atualizarTurno(self, turno: Turno):
         g = update_command_from_model(
@@ -38,3 +40,4 @@ class TurnosRepository(BaseRepository):
         g += " WHERE id = :id"
 
         exec_sql(self.connection, g, turno.dict())
+        self.upsertUltimasAlteracoes('dia_hora_atividade')

@@ -118,6 +118,7 @@ class AtividadesRepository(BaseRepository):
         columnsTable = AtividadeCreate.construct().__fields__
         query = insert_command_from_models(
             'atividade', columnsTable, [atividade])
+        self.upsertUltimasAlteracoes('atividade')
         return query_db(self.connection, query[0] + " RETURNING id", query[1], single=True)
 
     def salvarHorariosAtividades(self, horarios: List[DiaHoraAtividade]):
@@ -140,6 +141,7 @@ class AtividadesRepository(BaseRepository):
         g += " WHERE id = :id"
 
         exec_sql(self.connection, g, atividade.dict())
+        self.upsertUltimasAlteracoes('atividade')
 
     def obterListaCertificadosUsuario(self, usuarioId: int) -> List[CertificadoUsuario]:
         query = """select id, numero_edicao, cod_tipo, data_inicio, data_fim, tema, titulo, (inteira*1.0 + meia/2.0)/(dias*1.0) as percentual_presenca, duracao_atividade from (
@@ -214,3 +216,4 @@ class AtividadesRepository(BaseRepository):
             "AtividadeId": atividadeId
         }
         exec_sql(self.connection, query, param)
+        self.upsertUltimasAlteracoes('atividade')
