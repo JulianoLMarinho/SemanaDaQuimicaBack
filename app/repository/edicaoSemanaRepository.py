@@ -109,6 +109,22 @@ class EdicaoSemanaRepository(BaseRepository):
         }
         exec_sql(self.connection, query, params)
 
+    def salvarComoChegar(self, comoChegarTexto: str, edicaoSemanaId: int):
+        query = "UPDATE edicao_semana SET como_chegar = :ComoChegar WHERE id = :EdicaoSemanaId"
+        params = {
+            "ComoChegar": comoChegarTexto,
+            "EdicaoSemanaId": edicaoSemanaId
+        }
+        exec_sql(self.connection, query, params)
+
+    def salvarFaleConosco(self, faleConosco: str, edicaoSemanaId: int):
+        query = "UPDATE edicao_semana SET fale_conosco = :FaleConosco WHERE id = :EdicaoSemanaId"
+        params = {
+            "FaleConosco": faleConosco,
+            "EdicaoSemanaId": edicaoSemanaId
+        }
+        exec_sql(self.connection, query, params)
+
     def criarAviso(self, aviso: AvisoCreate):
         columnsTable = AvisoCreate.construct().__fields__
         query = insert_command_from_models(

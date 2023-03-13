@@ -40,6 +40,8 @@ class EdicaoSemanaComDetalhes(EdicaoSemana):
     direcao_instituto: Optional[str]
     assinatura_direcao_instituto: Optional[str]
     quem_somos: Optional[str]
+    como_chegar: Optional[str]
+    fale_conosco: Optional[str]
 
 
 class EdicaoSemanaComComissao(EdicaoSemanaComDetalhes):
@@ -87,4 +89,14 @@ class Assinatura(BaseModel):
 
 class QuemSomos(BaseModel):
     quem_somos: str
+    edicao_semana_id: int
+
+
+class ComoChegar(BaseModel):
+    como_chegar: str
+    edicao_semana_id: int
+
+
+class FaleConosco(BaseModel):
+    fale_conosco: str
     edicao_semana_id: int

@@ -5,7 +5,7 @@ from sse_starlette import EventSourceResponse
 from app.dependencies import current_user_is_admin, get_current_active_user
 from ..model.aviso import Aviso, AvisoCreate, AvisoNotificacao, FiltroAviso
 
-from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds, QuemSomos
+from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, ComoChegar, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds, FaleConosco, QuemSomos
 from app.services.edicaoSemanaService import EdicaoSemanaService
 
 
@@ -134,6 +134,24 @@ def obterQuemSomos(
     service: EdicaoSemanaService = Depends()
 ):
     return service.obterQuemSomos(edicaoSemanaId)
+
+
+@router.put("/como-chegar", dependencies=[Depends(current_user_is_admin)])
+def salvarComoChegar(
+    comoChegar: ComoChegar,
+    service: EdicaoSemanaService = Depends()
+):
+    service.salvarComoChegar(comoChegar.como_chegar,
+                             comoChegar.edicao_semana_id)
+
+
+@router.put("/fale-conosco", dependencies=[Depends(current_user_is_admin)])
+def salvarFaleConosco(
+    faleConosco: FaleConosco,
+    service: EdicaoSemanaService = Depends()
+):
+    service.salvarFaleConosco(faleConosco.fale_conosco,
+                              faleConosco.edicao_semana_id)
 
 
 @router.put("/liberar-certificado/{edicaoSemanaId}/{liberar}", dependencies=[Depends(current_user_is_admin)])

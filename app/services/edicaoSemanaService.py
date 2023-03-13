@@ -83,6 +83,12 @@ class EdicaoSemanaService:
     def salvarQuemSomos(self, quemSomosTexto: str, edicaoSemanaId: int):
         self.repo.salvarQuemSomos(quemSomosTexto, edicaoSemanaId)
 
+    def salvarComoChegar(self, comoChegarTexto: str, edicaoSemanaId: int):
+        self.repo.salvarComoChegar(comoChegarTexto, edicaoSemanaId)
+
+    def salvarFaleConosco(self, faleConosco: str, edicaoSemanaId: int):
+        self.repo.salvarFaleConosco(faleConosco, edicaoSemanaId)
+
     def criarAviso(self, aviso: AvisoCreate):
         self.repo.criarAviso(aviso)
 
