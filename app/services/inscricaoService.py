@@ -43,8 +43,8 @@ class InscricaoService:
             lock.release()
         return inscricaoId.id
 
-    def obterAtividadesUsuario(self, usuario_id) -> List[AtividadeUsuario]:
-        return self.repo.obterAtividadesUsuario(usuario_id)
+    def obterAtividadesUsuario(self, usuario_id, edicao_id) -> List[AtividadeUsuario]:
+        return self.repo.obterAtividadesUsuario(usuario_id, edicao_id)
 
     def obterInscricoes(self, usuario_id) -> List[Inscricao]:
         return self.repo.obterInscricoes(usuario_id)

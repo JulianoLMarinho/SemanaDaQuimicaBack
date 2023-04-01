@@ -1,5 +1,5 @@
 import asyncio
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, BackgroundTasks, Depends
 
 from app.dependencies import current_user_is_admin, get_current_active_user
@@ -100,9 +100,10 @@ def obterInscricoesPorAtividade(
 @router.get("/{usuarioId}", dependencies=[Depends(get_current_active_user)], response_model=List[AtividadeUsuario])
 def obterAtividadesUsuario(
     usuarioId: int,
+    edicaoSemana: Optional[int] = None,
     service: InscricaoService = Depends()
 ):
-    return service.obterAtividadesUsuario(usuarioId)
+    return service.obterAtividadesUsuario(usuarioId, edicaoSemana)
 
 
 @router.get("/{usuarioId}/resumo", dependencies=[Depends(get_current_active_user)], response_model=List[Inscricao])
