@@ -48,6 +48,11 @@ class EdicaoSemanaService:
     def editarCriarEdicaoSemana(self, edicaoSemana: EdicaoSemana):
         transaction = self.repo.connection.begin()
         try:
+            if edicaoSemana.ativa:
+                semanaAtiva = self.getEdicaoAtiva()
+                if edicaoSemana.id != semanaAtiva.id:
+                    semanaAtiva.ativa = False
+                    self.repo.editarEdicaoSemana(semanaAtiva)
             if edicaoSemana.id == None:
                 edicaoInsertId = self.adicionarEdicaoSemana(edicaoSemana)
                 edicaoSemana.id = edicaoInsertId.id

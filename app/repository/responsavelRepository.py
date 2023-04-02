@@ -17,7 +17,8 @@ class ResponsavelRepository(BaseRepository):
     def obterComissao(self, edicaoSemanaId) -> List[Responsavel]:
         query = """SELECT r.* FROM responsavel r 
                     INNER JOIN edicao_comissao ec on ec.responsavel_id = r.id
-                    WHERE ec.edicao_semana_id = :SemanaEdicaoId AND r.tipo = 'comissao'"""
+                    WHERE ec.edicao_semana_id = :SemanaEdicaoId AND r.tipo = 'comissao'
+                    ORDER BY ordem"""
         return query_db(self.connection, query, {'SemanaEdicaoId': edicaoSemanaId}, model=Responsavel)
 
     def salvarNovoResponsavel(self, responsavel: ResponsavelCreate):
@@ -52,7 +53,8 @@ class ResponsavelRepository(BaseRepository):
     def obterComissaoByEdicao(self, edicaoSemanaId: int) -> List[Responsavel]:
         query = """SELECT * FROM responsavel r
                     INNER JOIN edicao_comissao ec ON ec.responsavel_id = r.id
-                    WHERE ec.edicao_semana_id = :EdicaoId"""
+                    WHERE ec.edicao_semana_id = :EdicaoId
+                    ORDER BY ordem"""
         return query_db(self.connection, query, {'EdicaoId': edicaoSemanaId}, model=Responsavel)
 
     def deleteResponsavel(self, responsavel_id: int):

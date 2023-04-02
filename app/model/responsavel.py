@@ -13,6 +13,7 @@ class ResponsavelCreate(BaseModel):
     facebook: Optional[str]
     tipo: str = 'responsavel'
     funcao_semana: Optional[str]
+    ordem: Optional[int]
 
 
 class ComissaoCreate(ResponsavelCreate):
