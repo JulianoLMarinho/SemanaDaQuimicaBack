@@ -11,6 +11,10 @@ class EdicaoSemanaRepository(BaseRepository):
         query = """SELECT * FROM edicao_semana WHERE ativa = true"""
         return query_db(connection=self.connection, query=query, model=EdicaoSemanaComComissao, single=true)
 
+    def getEdicaoByID(self, id: int) -> EdicaoSemanaComComissao:
+        query = """SELECT * FROM edicao_semana WHERE id = :Id"""
+        return query_db(connection=self.connection, query=query, params={'Id': id}, model=EdicaoSemanaComComissao, single=true)
+
     def updateTemaEdicaoAtiva(self, tema: str):
         query = f"UPDATE edicao_semana SET tema = :Tema WHERE ativa = true"
         exec_sql(self.connection, query, {'Tema': tema})

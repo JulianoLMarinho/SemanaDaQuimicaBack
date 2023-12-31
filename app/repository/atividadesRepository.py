@@ -142,10 +142,11 @@ class AtividadesRepository(BaseRepository):
         exec_sql(self.connection, g, atividade.dict())
 
     def obterListaCertificadosUsuario(self, usuarioId: int) -> List[CertificadoUsuario]:
-        query = """select id, numero_edicao, cod_tipo, data_inicio, data_fim, tema, titulo, (inteira*1.0 + meia/2.0)/(dias*1.0) as percentual_presenca, duracao_atividade from (
-                    select id, numero_edicao, cod_tipo, data_inicio, data_fim, tema, titulo, inteira, meia, count(1) as dias, sum(diff) as duracao_atividade from (
+        query = """select id, numero_edicao, edicao_id, cod_tipo, data_inicio, data_fim, tema, titulo, (inteira*1.0 + meia/2.0)/(dias*1.0) as percentual_presenca, duracao_atividade from (
+                    select id, numero_edicao, edicao_id, cod_tipo, data_inicio, data_fim, tema, titulo, inteira, meia, count(1) as dias, sum(diff) as duracao_atividade from (
                         select a.id, 
                                es.numero_edicao, 
+                               es.id as edicao_id,
                                a.titulo, 
                                es.data_inicio, 
                                es.data_fim, 
@@ -166,9 +167,9 @@ class AtividadesRepository(BaseRepository):
                         left join dia_hora_atividade dha on dha.turno_id = at2.turno_id 
                         left join presenca p on p.inscricao_atividade_id = ia.id 
                         left join dia_hora_atividade dha2 on dha2.atividade_edicao_id = a.id
-                        group by a.id, tp.cod_tipo, es.numero_edicao, a.titulo, es.data_inicio, es.data_fim, es.tema, dha.dia, dha.hora_fim, dha.hora_inicio, dha2.dia, dha2.hora_fim, dha2.hora_inicio
+                        group by a.id, tp.cod_tipo, es.numero_edicao, es.id, a.titulo, es.data_inicio, es.data_fim, es.tema, dha.dia, dha.hora_fim, dha.hora_inicio, dha2.dia, dha2.hora_fim, dha2.hora_inicio
                         ) b
-                    group by id, cod_tipo, numero_edicao, titulo, inteira, meia, data_inicio, data_fim, tema
+                    group by id, cod_tipo, numero_edicao, edicao_id, titulo, inteira, meia, data_inicio, data_fim, tema
                 ) c"""
 
         return query_db(self.connection, query, {'UsuarioId': usuarioId}, model=CertificadoUsuario)

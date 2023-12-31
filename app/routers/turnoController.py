@@ -31,6 +31,12 @@ def criarEditarTurno(
     else:
         return service.criarTurno(turno)
 
+@router.delete('/{TurnoId}', dependencies=[Depends(current_user_is_admin)])
+def deleteTurno(
+    TurnoId: int,
+    service: TurnoService = Depends()
+):
+    return service.deletarTurnoById(TurnoId)
 
 @router.get('/turnos-selecao/{edicaoId}', response_model=List[OpcaoSelecao])
 def obterTurnosSelecaoByEdicao(

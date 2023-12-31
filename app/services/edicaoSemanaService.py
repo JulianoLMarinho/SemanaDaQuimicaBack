@@ -12,8 +12,16 @@ class EdicaoSemanaService:
         self.repo = repository
         self.responsavelService = responsavelService
 
-    def getEdicaoAtiva(self) -> EdicaoSemanaComComissao:
+    def getEdicaoAtiva(self, ) -> EdicaoSemanaComComissao:
         edicao = self.repo.getEdicaoAtiva()
+        if edicao is None:
+            return edicao
+        edicao.comissao_edicao = self.responsavelService.obterComissaoByEdicao(
+            edicao.id)
+        return edicao
+    
+    def getEdicaoById(self, id: int) -> EdicaoSemanaComComissao:
+        edicao = self.repo.getEdicaoByID(id)
         if edicao is None:
             return edicao
         edicao.comissao_edicao = self.responsavelService.obterComissaoByEdicao(

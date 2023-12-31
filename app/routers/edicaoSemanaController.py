@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, List
+from typing import Any, List, Optional
 from fastapi import APIRouter, Depends, Request
 from sse_starlette import EventSourceResponse
 from app.dependencies import current_user_is_admin, get_current_active_user
@@ -16,9 +16,10 @@ tags = ['Edição Semana']
 
 @router.get("", response_model=EdicaoSemanaComComissao)
 def getEdicaoSemana(
+    id: Optional[int] = None,
     service: EdicaoSemanaService = Depends()
 ):
-    return service.getEdicaoAtiva()
+    return service.getEdicaoAtiva() if id is None else service.getEdicaoById(id)
 
 
 @router.put("", dependencies=[Depends(current_user_is_admin)])

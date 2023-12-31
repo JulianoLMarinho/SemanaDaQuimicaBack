@@ -38,3 +38,30 @@ class TurnosRepository(BaseRepository):
         g += " WHERE id = :id"
 
         exec_sql(self.connection, g, turno.dict())
+
+    def deletarAtividadeTurno(self, turno_id: int):
+        query = """
+                DELETE FROM atividade_turno WHERE turno_id = :TurnoId
+                """
+        exec_sql(self.connection, query, {"TurnoId": turno_id})
+
+    def deletarDiaHoraTurno(self, turno_id: int):
+        query = """
+                DELETE FROM dia_hora_atividade WHERE turno_id = :TurnoId
+                """
+        exec_sql(self.connection, query, {"TurnoId": turno_id})
+
+    def atividadesByTurno(self, turno_id: int):
+        query = """
+                select a.titulo  from turno t 
+                inner join atividade_turno at2 on at2.turno_id = t.id 
+                inner join atividade a on a.id = at2.atividade_id 
+                where t.id = :TurnoId
+                """
+        return query_db(self.connection, query, {"TurnoId": turno_id})
+    
+    def deletarTurno(self, turno_id: int):
+        query = """
+                DELETE FROM turno WHERE id = :TurnoId
+                """
+        exec_sql(self.connection, query, {"TurnoId": turno_id})

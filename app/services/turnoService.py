@@ -1,6 +1,6 @@
 from typing import List
 from xmlrpc.client import boolean
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from app.model.comum import OpcaoSelecao
 from app.model.turno import Turno, TurnoComHorarios, TurnoCriacao, TurnoCriacaoComHorario
 from app.repository.diaHorarioRepository import DiaHorarioRepository
@@ -62,3 +62,22 @@ class TurnoService:
 
     def deletarTurnosByAtividade(self, atividadeId):
         self.repo.deletarTurnosByAtividade(atividadeId)
+
+    def deletarTurnoById(self, turno_id: int):
+        
+        atividades_result = self.repo.atividadesByTurno(turno_id)
+        atividades = [atividade["titulo"] for atividade in atividades_result]
+        if len(atividades):
+            error_message = "O Turno está associado às segintes atividades: " + ", ".join(atividades) + ". Altere os turnos das atividades mencionadas e tente novamente."
+            raise HTTPException(500, error_message)
+        
+        transaction = self.repo.connection.begin()
+        try:
+            self.repo.deletarAtividadeTurno(turno_id)
+            self.repo.deletarDiaHoraTurno(turno_id)
+            self.repo.deletarTurno(turno_id)
+            transaction.commit()
+            return True
+        except:
+            transaction.rollback()
+            raise HTTPException(500, 'Não foi possível deletar o turno')

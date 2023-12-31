@@ -6,6 +6,7 @@ from sqlalchemy import Interval
 class CertificadoUsuario(BaseModel):
     id: int
     numero_edicao: int
+    edicao_id: int
     cod_tipo: str
     data_inicio: date
     data_fim: date
