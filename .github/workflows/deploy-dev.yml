@@ -1,0 +1,29 @@
+name: deploy-dev-environment
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy-dev-environment:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Check out the repository to the runner
+        uses: actions/checkout@v4
+      - name: SSH and run commands
+        run: |
+          mkdir -p ~/.ssh
+          touch ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+      - name: Make generate-env-file.sh executable
+        run: chmod +x scripts/generate-env-file.sh
+      - name: Generate .env file
+        run: |
+          ./scripts/generate-env-file.sh "${{ secrets.JWT_KEY }}" "${{ secrets.GOOGLE_KEY }}" "${{ secrets.DB_PASSWORD }}" "${{ secrets.DB_USER }}" "${{ secrets.DB_URL }}" "${{ secrets.DB_DATATABLE }}" "${{ secrets.EMAIL_SERVER }}" "${{ secrets.EMAIL_USER }}" "${{ secrets.EMAIL_PASSWORD }}"
+      - name: Make deploy.sh executable
+        run: chmod +x scripts/deploy-dev.sh
+      - name: Deploy to Development Environemnt
+        run: |
+          ./scripts/deploy-dev.sh "${{ secrets.VPS_USERNAME }}" "${{ secrets.VPS_HOST }}" "${{ secrets.SSH_PRIVATE_KEY }}"

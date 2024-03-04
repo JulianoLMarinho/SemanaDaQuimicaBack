@@ -1,0 +1,14 @@
+[Unit]
+Description=API da Semana da Química
+Wants=network.target
+After=network.target
+
+[Service]
+Type=simple
+ExecStartPre=/bin/sleep 10
+ExecStart=/bin/sh -c 'cd /root/SemanaDaQuimica && app/venv/bin/python -m uvicorn app.main:app --port 8001'
+Restart=always
+
+
+[Install]
+WantedBy=multi-user.target
