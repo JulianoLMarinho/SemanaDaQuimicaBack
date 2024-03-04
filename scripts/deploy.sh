@@ -2,6 +2,9 @@
 
 VPS_USERNAME_HOST=${VPS_USERNAME}@${VPS_HOST}
 
+echo $VPS_USERNAME_HOST
+echo $SSH_PRIVATE_KEY
+
 eval $(ssh-agent -s)
 
 ssh-add <(echo "$SSH_PRIVATE_KEY")
