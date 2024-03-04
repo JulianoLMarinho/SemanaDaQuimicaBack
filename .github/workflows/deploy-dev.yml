@@ -7,9 +7,9 @@ on:
       - add-github-action-deploy
 
 jobs:
-  deploy-dev-environemnt:
+  deploy-dev-environment:
     runs-on: ubuntu-latest
-    environement: dev
+    environment: dev
     steps:
       - name: Check out the repository to the runner
         uses: actions/checkout@v4
