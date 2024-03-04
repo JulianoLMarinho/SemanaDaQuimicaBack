@@ -21,4 +21,4 @@ jobs:
         run: chmod +x scripts/deploy.sh
       - name: Deploy to Dev Environemnt
         run: |
-          ./scripts/deploy.sh $VPS_USERNAME $VPS_HOST $SSH_PRIVATE_KEY
+          ./scripts/deploy.sh "${{ secrets.VPS_USERNAME }}" "${{ secrets.VPS_HOST }}" "${{ secrets.SSH_PRIVATE_KEY }}"
