@@ -13,5 +13,11 @@ jobs:
     steps:
       - name: Check out the repository to the runner
         uses: actions/checkout@v4
+      - name: Make generate-env-file.sh executable
+        run: chmod +x scripts/generate-env-file.sh
+      - name: Generate .env file
+        run: ./scripts/generate-env-file.sh
+      - name: Make deploy.sh executable
+        run: chmod +x scripts/deploy.sh
       - name: Deploy to Dev Environemnt
         run: ./scripts/deploy.sh
