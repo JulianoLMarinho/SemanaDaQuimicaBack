@@ -3,12 +3,12 @@ name: deploy-dev-environment
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   deploy-dev-environment:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: prod
     steps:
       - name: Check out the repository to the runner
         uses: actions/checkout@v4
