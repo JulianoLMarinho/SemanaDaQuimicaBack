@@ -19,6 +19,9 @@ jobs:
         run: ./scripts/generate-env-file.sh
       - name: Make deploy.sh executable
         run: chmod +x scripts/deploy.sh
+      - name: SSH and run commands
+        run: |
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
       - name: Deploy to Dev Environemnt
         run: |
           ./scripts/deploy.sh "${{ secrets.VPS_USERNAME }}" "${{ secrets.VPS_HOST }}" "${{ secrets.SSH_PRIVATE_KEY }}"
