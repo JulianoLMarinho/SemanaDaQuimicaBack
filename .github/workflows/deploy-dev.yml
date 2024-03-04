@@ -23,7 +23,7 @@ jobs:
         run: |
           ./scripts/generate-env-file.sh "${{ secrets.JWT_KEY }}" "${{ secrets.GOOGLE_KEY }}" "${{ secrets.DB_PASSWORD }}" "${{ secrets.DB_USER }}" "${{ secrets.DB_URL }}" "${{ secrets.DB_DATATABLE }}" "${{ secrets.EMAIL_SERVER }}" "${{ secrets.EMAIL_USER }}" "${{ secrets.EMAIL_PASSWORD }}"
       - name: Make deploy.sh executable
-        run: chmod +x scripts/deploy.sh
-      - name: Deploy to Dev Environemnt
+        run: chmod +x scripts/deploy-dev.sh
+      - name: Deploy to Development Environemnt
         run: |
-          ./scripts/deploy.sh "${{ secrets.VPS_USERNAME }}" "${{ secrets.VPS_HOST }}" "${{ secrets.SSH_PRIVATE_KEY }}"
+          ./scripts/deploy-dev.sh "${{ secrets.VPS_USERNAME }}" "${{ secrets.VPS_HOST }}" "${{ secrets.SSH_PRIVATE_KEY }}"
