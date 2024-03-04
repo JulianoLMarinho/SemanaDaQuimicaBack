@@ -10,7 +10,9 @@ eval $(ssh-agent -s)
 
 ssh-add <(echo "$SSH_PRIVATE_KEY")
 
-ssh ${VPS_USERNAME_HOST} "cd SemanaTeste && rm -rf *"
+ssh ${VPS_USERNAME_HOST} "rm -rf SemanaTeste"
+
+ssh ${VPS_USERNAME_HOST} "mkdir SemanaTeste"
 
 scp -r app ${VPS_USERNAME_HOST}:~/SemanaTeste
 scp requirements.txt ${VPS_USERNAME_HOST}:~/SemanaTeste
