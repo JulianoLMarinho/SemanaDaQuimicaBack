@@ -21,6 +21,8 @@ jobs:
         run: chmod +x scripts/deploy.sh
       - name: SSH and run commands
         run: |
+          mkdir -p ~/.ssh
+          touch ~/.ssh/known_hosts
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
       - name: Deploy to Dev Environemnt
         run: |
