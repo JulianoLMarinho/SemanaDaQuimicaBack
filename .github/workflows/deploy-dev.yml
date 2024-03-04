@@ -20,4 +20,5 @@ jobs:
       - name: Make deploy.sh executable
         run: chmod +x scripts/deploy.sh
       - name: Deploy to Dev Environemnt
-        run: ./scripts/deploy.sh
+        run: |
+        ./scripts/deploy.sh "$VPS_USERNAME" "$VPS_HOST" "$SSH_PRIVATE_KEY"
