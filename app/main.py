@@ -5,6 +5,7 @@ from typing import Optional
 from app.model.authRequestBody import AuthRequestBody
 from app.route_setup import bind_routers
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi import Depends
 from app.services.authorizationService import AuthorizationService
 from app.sql.database import dbEngine
@@ -37,6 +38,8 @@ origins = [
     "https://semanadaquimicaufrj.com.br",
     "https://www.semanadaquimicaufrj.com.br"
 ]
+
+app.add_middleware(GZipMiddleware, minimum_size=500)
 
 app.add_middleware(
     CORSMiddleware,
