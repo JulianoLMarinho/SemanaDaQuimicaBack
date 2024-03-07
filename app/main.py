@@ -1,7 +1,4 @@
-from enum import Enum
 from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import Optional
 from app.model.authRequestBody import AuthRequestBody
 from app.route_setup import bind_routers
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,20 +6,6 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi import Depends
 from app.services.authorizationService import AuthorizationService
 from app.sql.database import dbEngine
-
-
-class ModelName(str, Enum):
-    alexnet = "alexnet"
-    resnet = "resnet"
-    lenet = "lenet"
-
-
-class Item(BaseModel):
-    name: str
-    description: Optional[str] = None
-    price: float
-    tax: Optional[float] = None
-
 
 app = FastAPI(
     on_startup=[dbEngine.open_connection_pools],

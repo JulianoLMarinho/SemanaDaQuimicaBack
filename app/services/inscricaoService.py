@@ -1,5 +1,5 @@
 import asyncio
-from typing import List
+from typing import List, Optional
 from fastapi import Depends
 from app.model.atividades import Atividade
 from app.model.inscricao import AtividadeUsuario, Inscricao, InscricaoAtividades
@@ -128,3 +128,6 @@ class InscricaoService:
 
     def tamanhoCamisaUsuarioInscrito(self, edicao_id: int):
         return self.repo.tamanhoCamisaUsuarioInscrito(edicao_id)
+
+    def obterAtividadesAlunos(self, edicao_id: int, atividade_id: Optional[int] = None):
+        return self.repo.obterAtividadesAlunos(edicao_id, atividade_id)

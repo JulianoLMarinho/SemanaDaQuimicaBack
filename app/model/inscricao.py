@@ -33,3 +33,11 @@ class AtividadeUsuario(BaseModel):
     status: str
     camisa_kit: bool
     cotista_sbq: bool
+
+
+class AlunoAtividade(BaseModel):
+    inscricao_id: int
+    edicao_semana_id: int
+    aluno_nome: str
+    aluno_email: str
+    atividade_titulo: str

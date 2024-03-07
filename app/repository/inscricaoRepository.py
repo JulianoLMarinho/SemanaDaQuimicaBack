@@ -1,6 +1,6 @@
-from typing import Any, List
+from typing import Any, List, Optional
 from app.model.atividades import Atividade
-from app.model.inscricao import AtividadeUsuario, Inscricao, InscricaoCreate
+from app.model.inscricao import AlunoAtividade, AtividadeUsuario, Inscricao, InscricaoCreate
 from app.model.tabelas import InscricoesEdicao
 from app.model.usuario import NomeEmail, Usuario
 from app.repository.baseRepository import BaseRepository
@@ -118,3 +118,16 @@ class InscricaoRepository(BaseRepository):
             order by u.nome
         """
         return query_db(self.connection, query, {"EdicaoID": edicao_id})
+
+    def obterAtividadesAlunos(self, edicao_id: int, atividade_id: Optional[int] = None) -> List[AlunoAtividade]:
+        query = """
+            select i.id as inscricao_id, i.edicao_semana_id , u.nome as aluno_nome, u.email as aluno_email, a.titulo as atividade_titulo  from inscricao i 
+            inner join usuario u on u.id = i.usuario_id 
+            inner join inscricao_atividade ia on ia.inscricao_id = i.id 
+            inner join atividade a on a.id = ia.atividade_id 
+            where status = 'PAGAMENTO_CONFIRMADO'
+            and i.edicao_semana_id = :EdicaoId
+            and (:AtividadeId is null or a.id = :AtividadeId)
+        """
+
+        return query_db(self.connection, query, {"EdicaoId": edicao_id, "AtividadeId": atividade_id}, model=AlunoAtividade)
