@@ -47,14 +47,18 @@ class InscricaoRepository(BaseRepository):
                     WHERE ia.inscricao_id = :InscricaoId"""
         return query_db(self.connection, query, {"InscricaoId": inscricao_id}, model=Atividade)
 
-    def informarPagamento(self, inscricao_id, numero_documento):
+    def informarPagamento(self, inscricao_id, numero_documento, titular_comprovante, id_comprovante):
         query = """UPDATE inscricao SET
                    status = 'PAGAMENTO_INFORMADO',
-                   numero_comprovante = :NumeroDocumento
+                   numero_comprovante = :NumeroDocumento,
+                   titular_comprovante = :TitularComprovante,
+                   id_comprovante = :IdComprovante
                    WHERE id = :InscricaoId"""
         params = {
             "InscricaoId": inscricao_id,
-            "NumeroDocumento": numero_documento
+            "NumeroDocumento": numero_documento,
+            "TitularComprovante": titular_comprovante,
+            "IdComprovante": id_comprovante,
         }
         exec_sql(self.connection, query, params)
 

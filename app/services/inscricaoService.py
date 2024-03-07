@@ -55,8 +55,9 @@ class InscricaoService:
     def obterAtividade(self, inscricao_id) -> List[Atividade]:
         return self.repo.obterAtividade(inscricao_id)
 
-    def informarPagamento(self, inscricao_id, numero_documento):
-        self.repo.informarPagamento(inscricao_id, numero_documento)
+    def informarPagamento(self, inscricao_id, numero_documento, titular_comprovante, id_comprovante):
+        self.repo.informarPagamento(
+            inscricao_id, numero_documento, titular_comprovante, id_comprovante)
 
     def cancelarInscricao(self, inscricao_id):
         self.repo.alterarStatusInscricao(inscricao_id, 'CANCELADA')
