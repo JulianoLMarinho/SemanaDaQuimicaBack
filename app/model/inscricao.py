@@ -18,6 +18,7 @@ class Inscricao(InscricaoCreate):
     id_comprovante: Optional[str]
     nome: Optional[str]
     email: Optional[str]
+    numero_edicao: Optional[str]
 
 
 class InscricaoAtividades(Inscricao):
