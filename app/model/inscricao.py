@@ -39,4 +39,5 @@ class AlunoAtividade(BaseModel):
     inscricao_id: int
     edicao_semana_id: int
     aluno_nome: str
+    aluno_email: str
     atividade_titulo: str

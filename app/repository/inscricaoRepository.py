@@ -121,7 +121,7 @@ class InscricaoRepository(BaseRepository):
 
     def obterAtividadesAlunos(self, edicao_id: int, atividade_id: Optional[int] = None) -> List[AlunoAtividade]:
         query = """
-            select i.id as inscricao_id, i.edicao_semana_id , u.nome as aluno_nome, a.titulo as atividade_titulo  from inscricao i 
+            select i.id as inscricao_id, i.edicao_semana_id , u.nome as aluno_nome, u.email as aluno_email, a.titulo as atividade_titulo  from inscricao i 
             inner join usuario u on u.id = i.usuario_id 
             inner join inscricao_atividade ia on ia.inscricao_id = i.id 
             inner join atividade a on a.id = ia.atividade_id 
