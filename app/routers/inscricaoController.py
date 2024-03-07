@@ -50,7 +50,9 @@ def informarPagamento(
     service: InscricaoService = Depends()
 ):
     service.informarPagamento(documento.inscricao_id,
-                              documento.numero_documento)
+                              documento.numero_documento,
+                              documento.titular_comprovante,
+                              documento.id_comprovante)
 
 
 @router.delete("/{inscricaoId}", dependencies=[Depends(get_current_active_user)])
