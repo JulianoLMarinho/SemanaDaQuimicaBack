@@ -1,7 +1,7 @@
 from typing import List
 from sqlalchemy import true
 from app.model.aviso import Aviso, AvisoCreate, AvisoNotificacao, FiltroAviso
-from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaCreate
+from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaCreate, FotoCamisaPreco
 from app.repository.baseRepository import BaseRepository
 from app.sql.crud import exec_sql, exec_sql, insert_command_from_models, query_db, query_db, update_command_from_model
 
@@ -128,6 +128,18 @@ class EdicaoSemanaRepository(BaseRepository):
             "EdicaoSemanaId": edicaoSemanaId
         }
         exec_sql(self.connection, query, params)
+
+    def salvarTextoPagamento(self, texto_pagamento: str, edicao_semana_id: int):
+        query = "UPDATE edicao_semana SET texto_pagamento = :TextoPagamento WHERE id = :EdicaoSemanaId"
+        params = {
+            "TextoPagamento": texto_pagamento,
+            "EdicaoSemanaId": edicao_semana_id
+        }
+        exec_sql(self.connection, query, params)
+
+    def salvarFotoCamisaPreco(self, foto_camisa_preco: FotoCamisaPreco):
+        query = f"UPDATE edicao_semana SET foto_camisa = :foto_camisa, valor_camisa = :valor_camisa WHERE id = :edicao_semana_id"
+        exec_sql(self.connection, query, foto_camisa_preco.dict())
 
     def criarAviso(self, aviso: AvisoCreate):
         columnsTable = AvisoCreate.construct().__fields__
