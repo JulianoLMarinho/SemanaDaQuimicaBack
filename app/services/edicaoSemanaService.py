@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import Depends
 from app.model.aviso import Aviso, AvisoCreate, AvisoNotificacao, FiltroAviso
-from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds, EdicaoSemanaCreate
+from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds, EdicaoSemanaCreate, FotoCamisaPreco
 
 from app.repository.edicaoSemanaRepository import EdicaoSemanaRepository
 from app.services.responsavelService import ResponsavelService
@@ -19,7 +19,7 @@ class EdicaoSemanaService:
         edicao.comissao_edicao = self.responsavelService.obterComissaoByEdicao(
             edicao.id)
         return edicao
-    
+
     def getEdicaoById(self, id: int) -> EdicaoSemanaComComissao:
         edicao = self.repo.getEdicaoByID(id)
         if edicao is None:
@@ -56,11 +56,15 @@ class EdicaoSemanaService:
     def editarCriarEdicaoSemana(self, edicaoSemana: EdicaoSemana):
         transaction = self.repo.connection.begin()
         try:
+            semanaAtiva = self.getEdicaoAtiva()
             if edicaoSemana.ativa:
-                semanaAtiva = self.getEdicaoAtiva()
-                if edicaoSemana.id != semanaAtiva.id:
+                if semanaAtiva and edicaoSemana.id != semanaAtiva.id:
                     semanaAtiva.ativa = False
                     self.repo.editarEdicaoSemana(semanaAtiva)
+            else:
+                if semanaAtiva and edicaoSemana.id == semanaAtiva.id:
+                    raise Exception(
+                        "Não é possível desativar uma edição ativa.")
             if edicaoSemana.id == None:
                 edicaoInsertId = self.adicionarEdicaoSemana(edicaoSemana)
                 edicaoSemana.id = edicaoInsertId.id
@@ -68,9 +72,9 @@ class EdicaoSemanaService:
                 self.repo.editarEdicaoSemana(edicaoSemana)
             transaction.commit()
             return True
-        except:
+        except Exception as e:
             transaction.rollback()
-            return False
+            raise e
 
     def deletarEdicaoSemana(self, edicaoSemanaId: int):
         self.repo.deletarEdicaoSemana(edicaoSemanaId)
@@ -116,3 +120,9 @@ class EdicaoSemanaService:
 
     def deletarAviso(self, avisoId: int):
         self.repo.deletarAviso(avisoId)
+
+    def salvarTextoPagamento(self, texto_pagamento: str, edicao_semana_id: int):
+        self.repo.salvarTextoPagamento(texto_pagamento, edicao_semana_id)
+
+    def salvarFotoCamisaPreco(self, foto_camisa_preco: FotoCamisaPreco):
+        self.repo.salvarFotoCamisaPreco(foto_camisa_preco)

@@ -14,8 +14,11 @@ class InscricaoCreate(BaseModel):
 class Inscricao(InscricaoCreate):
     id: Optional[int]
     numero_comprovante: Optional[str]
+    titular_comprovante: Optional[str]
+    id_comprovante: Optional[str]
     nome: Optional[str]
     email: Optional[str]
+    numero_edicao: Optional[str]
 
 
 class InscricaoAtividades(Inscricao):
@@ -25,6 +28,8 @@ class InscricaoAtividades(Inscricao):
 class InformarPagamento(BaseModel):
     inscricao_id: int
     numero_documento: str
+    titular_comprovante: str
+    id_comprovante: str
 
 
 class AtividadeUsuario(BaseModel):
@@ -33,3 +38,11 @@ class AtividadeUsuario(BaseModel):
     status: str
     camisa_kit: bool
     cotista_sbq: bool
+
+
+class AlunoAtividade(BaseModel):
+    inscricao_id: int
+    edicao_semana_id: int
+    aluno_nome: str
+    aluno_email: str
+    atividade_titulo: str

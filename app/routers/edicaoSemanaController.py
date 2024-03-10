@@ -5,7 +5,7 @@ from sse_starlette import EventSourceResponse
 from app.dependencies import current_user_is_admin, get_current_active_user
 from ..model.aviso import Aviso, AvisoCreate, AvisoNotificacao, FiltroAviso
 
-from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, ComoChegar, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds, FaleConosco, QuemSomos
+from app.model.edicaoSemana import Assinatura, CarouselImage, CarouselImageCreation, ComissaoEdicao, ComoChegar, EdicaoLogo, EdicaoSemana, EdicaoSemanaComComissao, EdicaoSemanaComComissaoIds, FaleConosco, FotoCamisaPreco, QuemSomos, TextoPagamento
 from app.services.edicaoSemanaService import EdicaoSemanaService
 
 
@@ -221,3 +221,20 @@ def deletarAviso(
 ):
     service.deletarAviso(avisoId)
     return True
+
+
+@router.put("/texto-pagamento", dependencies=[Depends(current_user_is_admin)])
+def salvarTextoPagamento(
+    texto_pagamento: TextoPagamento,
+    service: EdicaoSemanaService = Depends()
+):
+    service.salvarTextoPagamento(
+        texto_pagamento.texto_pagamento, texto_pagamento.edicao_semana_id)
+
+
+@router.post("/foto-camisa", dependencies=[Depends(current_user_is_admin)])
+def salvarFotoCamisaPreco(
+    foto_camisa_preco: FotoCamisaPreco,
+    service: EdicaoSemanaService = Depends()
+):
+    service.salvarFotoCamisaPreco(foto_camisa_preco)

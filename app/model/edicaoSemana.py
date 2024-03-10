@@ -42,6 +42,9 @@ class EdicaoSemanaComDetalhes(EdicaoSemana):
     quem_somos: Optional[str]
     como_chegar: Optional[str]
     fale_conosco: Optional[str]
+    texto_pagamento: Optional[str]
+    foto_camisa: Optional[str]
+    valor_camisa: Optional[float]
 
 
 class EdicaoSemanaComComissao(EdicaoSemanaComDetalhes):
@@ -100,3 +103,14 @@ class ComoChegar(BaseModel):
 class FaleConosco(BaseModel):
     fale_conosco: str
     edicao_semana_id: int
+
+
+class FotoCamisaPreco(BaseModel):
+    edicao_semana_id: int
+    foto_camisa: str
+    valor_camisa: float
+
+
+class TextoPagamento(BaseModel):
+    edicao_semana_id: int
+    texto_pagamento: str
