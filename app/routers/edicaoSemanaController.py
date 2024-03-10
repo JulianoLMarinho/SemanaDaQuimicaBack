@@ -232,7 +232,7 @@ def salvarTextoPagamento(
         texto_pagamento.texto_pagamento, texto_pagamento.edicao_semana_id)
 
 
-@router.put("/foto-camisa", dependencies=[Depends(current_user_is_admin)])
+@router.post("/foto-camisa", dependencies=[Depends(current_user_is_admin)])
 def salvarFotoCamisaPreco(
     foto_camisa_preco: FotoCamisaPreco,
     service: EdicaoSemanaService = Depends()

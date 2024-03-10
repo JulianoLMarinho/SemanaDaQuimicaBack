@@ -56,11 +56,15 @@ class EdicaoSemanaService:
     def editarCriarEdicaoSemana(self, edicaoSemana: EdicaoSemana):
         transaction = self.repo.connection.begin()
         try:
+            semanaAtiva = self.getEdicaoAtiva()
             if edicaoSemana.ativa:
-                semanaAtiva = self.getEdicaoAtiva()
-                if edicaoSemana.id != semanaAtiva.id:
+                if semanaAtiva and edicaoSemana.id != semanaAtiva.id:
                     semanaAtiva.ativa = False
                     self.repo.editarEdicaoSemana(semanaAtiva)
+            else:
+                if semanaAtiva and edicaoSemana.id == semanaAtiva.id:
+                    raise Exception(
+                        "Não é possível desativar uma edição ativa.")
             if edicaoSemana.id == None:
                 edicaoInsertId = self.adicionarEdicaoSemana(edicaoSemana)
                 edicaoSemana.id = edicaoInsertId.id
@@ -68,9 +72,9 @@ class EdicaoSemanaService:
                 self.repo.editarEdicaoSemana(edicaoSemana)
             transaction.commit()
             return True
-        except:
+        except Exception as e:
             transaction.rollback()
-            return False
+            raise e
 
     def deletarEdicaoSemana(self, edicaoSemanaId: int):
         self.repo.deletarEdicaoSemana(edicaoSemanaId)
