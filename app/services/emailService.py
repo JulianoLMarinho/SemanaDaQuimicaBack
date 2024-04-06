@@ -85,7 +85,7 @@ class EmailService:
                             </tr>
                             <tr align="center">
                             <td colspan="3" style="font-size: 11px; color:  {cores.cor1}">
-                                Comissão organizadora da 28ª Edição da Semana Da Química
+                                Comissão organizadora da {edicaoSemana.numero_edicao}ª Edição da Semana Da Química
                             </td>
                             </tr>
                         </tbody>
