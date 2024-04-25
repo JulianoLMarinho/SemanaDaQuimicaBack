@@ -120,8 +120,11 @@ class InscricaoRepository(BaseRepository):
     def tamanhoCamisaUsuarioInscrito(self, edicao_id: int):
         query = """
             select u.nome as Nome, u.tamanho_camisa as Tamanho from usuario u
-            inner join inscricao i on i.usuario_id = u.id and i.camisa_kit = true and i.status = 'PAGAMENTO_CONFIRMADO'
+            inner join inscricao i on i.usuario_id = u.id
+            inner join edicao_semana es on es.id = i.edicao_semana_id
             where i.edicao_semana_id = :EdicaoID
+            and (i.camisa_kit = true OR es.valor_camisa = 0) 
+            and i.status = 'PAGAMENTO_CONFIRMADO'
             order by u.nome
         """
         return query_db(self.connection, query, {"EdicaoID": edicao_id})
