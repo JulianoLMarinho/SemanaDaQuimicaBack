@@ -1,14 +1,15 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
 class InscricoesEdicao(BaseModel):
     nome: str
     email: str
-    nivel: str
-    curso: str
-    universidade: str
-    tamanho_camisa: str
-    genero: str
+    nivel: Optional[str]
+    curso: Optional[str]
+    universidade: Optional[str]
+    tamanho_camisa: Optional[str]
+    genero: Optional[str]
     numero_atividades: int
 
 
